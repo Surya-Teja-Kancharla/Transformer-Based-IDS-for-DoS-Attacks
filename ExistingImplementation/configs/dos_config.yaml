@@ -1,0 +1,108 @@
+# ============================================================
+# dos_config.yaml
+# Res-TranBiLSTM configuration for CIC-IDS2017 DoS-only subset
+# Paper: Wang et al., 2023 — Tables 6-10
+#
+# FYP NOTE: The aim of Phase 1 is to record parameters (11.3M)
+# and FLOPs as the baseline — NOT to maximise accuracy.
+# Epochs reduced to 30 and SMOTE capped at 15K/class to keep
+# total runtime under 2 hours on RTX 2050.
+# ============================================================
+
+experiment:
+  name: "res_tranbilstm_dos"
+  description: "CIC-IDS2017 DoS-only (5-class) replication"
+  seed: 42
+
+# ----------------------------------------------------------
+# Dataset
+# ----------------------------------------------------------
+data:
+  dataset:       "CIC-IDS2017"
+  csv_path:      "data/raw/Wednesday-workingHours.csv"
+  processed_dir: "data/processed"
+  augmented_dir: "data/augmented"
+  n_features:    64          # After feature selection (paper Section 4.1)
+  spatial_small: 8           # 8×8 intermediate grid
+  spatial_large: 28          # 28×28 bicubic upsampled (MNIST size)
+  train_ratio:   0.80
+  val_ratio:     0.10
+  test_ratio:    0.10
+  num_classes:   5           # BENIGN + 4 DoS types
+  class_names:
+    - "BENIGN"
+    - "DoS_slowloris"
+    - "DoS_Slowhttptest"
+    - "DoS_Hulk"
+    - "DoS_GoldenEye"
+
+# ----------------------------------------------------------
+# SMOTE-ENN (Paper Section 3.2.2)
+# CHANGED: sampling_strategy set to explicit dict (all classes
+# capped at 15,000) instead of "not majority" which was
+# oversampling BENIGN to 351K and generating 1.56M samples.
+# 15K × 5 classes = 75,000 training samples — manageable on
+# 12GB RAM and trains in ~40 min on RTX 2050.
+# ----------------------------------------------------------
+smote_enn:
+  enabled:               true
+  k_neighbors_smote:     5
+  n_neighbors_enn:       3
+  sampling_strategy:     "fixed"   # triggers explicit per-class cap
+  target_per_class:      15000     # 15K × 5 classes = 75K total
+
+# ----------------------------------------------------------
+# Spatial Feature Extraction — ResNet (Paper Table 6)
+# ----------------------------------------------------------
+spatial:
+  in_channels:    1          # Grayscale
+  output_dim:     128        # FC-1 output (paper Table 6)
+  dropout:        0.5        # Paper Table 10
+
+# ----------------------------------------------------------
+# Temporal Feature Extraction — TranBiLSTM (Paper Tables 7-8)
+# ----------------------------------------------------------
+temporal:
+  seq_len:          64
+  mlp_input_dim:    1
+  mlp_hidden_dim:   16       # FC-2 hidden (Table 7)
+  d_model:          32       # FC-3 / Transformer dim (Table 8)
+  n_heads:          4        # Attention heads (Table 8)
+  ff_hidden:        64       # FeedForward hidden size (Table 8)
+  bilstm_hidden:    64       # BiLSTM hidden per direction (Table 8)
+  dropout:          0.5
+
+# ----------------------------------------------------------
+# Classification Head (Paper Table 9)
+# ----------------------------------------------------------
+classification:
+  input_dim:   256           # Concat(spatial=128, temporal=128)
+  num_classes: 5
+  dropout:     0.5
+
+# ----------------------------------------------------------
+# Training (Paper Table 10 + Section 4.2)
+# CHANGED: max_epochs 100 → 30
+# Rationale: FYP goal is parameter/FLOPs comparison, not SOTA
+# accuracy. 30 epochs is sufficient to get stable metrics.
+# ----------------------------------------------------------
+training:
+  batch_size:     256        # Paper Table 10
+  learning_rate:  0.0001     # Paper Table 10 (Adam)
+  optimizer:      "adam"
+  dropout:        0.5        # Paper Table 10
+  max_epochs:     30         # Reduced from 100 — see note above
+  patience:       10         # Early stopping patience
+  grad_clip:      1.0
+  num_workers:    0          # 0 = no multiprocessing (safer on Windows)
+  device:         "cuda"
+
+# ----------------------------------------------------------
+# Paths
+# ----------------------------------------------------------
+paths:
+  checkpoint_dir: "results/checkpoints"
+  metrics_dir:    "results/metrics"
+  plots_dir:      "results/plots"
+  log_dir:        "logs"
+  tensorboard_dir: "logs/tensorboard"

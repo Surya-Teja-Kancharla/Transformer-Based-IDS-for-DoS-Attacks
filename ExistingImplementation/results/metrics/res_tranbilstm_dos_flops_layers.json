@@ -1,0 +1,910 @@
+[
+  {
+    "name": "spatial.conv1.0",
+    "type": "Conv2d",
+    "macs": 451584,
+    "params": 576,
+    "input_shape": [
+      1,
+      1,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      64,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.conv1.1",
+    "type": "BatchNorm2d",
+    "macs": 100352,
+    "params": 128,
+    "input_shape": [
+      1,
+      64,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      64,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.maxpool",
+    "type": "MaxPool2d",
+    "macs": 12544,
+    "params": 0,
+    "input_shape": [
+      1,
+      64,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      64,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.conv2_x.layer.0.conv1",
+    "type": "Conv2d",
+    "macs": 7225344,
+    "params": 36864,
+    "input_shape": [
+      1,
+      64,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      64,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.conv2_x.layer.0.bn1",
+    "type": "BatchNorm2d",
+    "macs": 25088,
+    "params": 128,
+    "input_shape": [
+      1,
+      64,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      64,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.conv2_x.layer.0.conv2",
+    "type": "Conv2d",
+    "macs": 7225344,
+    "params": 36864,
+    "input_shape": [
+      1,
+      64,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      64,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.conv2_x.layer.0.bn2",
+    "type": "BatchNorm2d",
+    "macs": 25088,
+    "params": 128,
+    "input_shape": [
+      1,
+      64,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      64,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.conv2_x.layer.1.conv1",
+    "type": "Conv2d",
+    "macs": 7225344,
+    "params": 36864,
+    "input_shape": [
+      1,
+      64,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      64,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.conv2_x.layer.1.bn1",
+    "type": "BatchNorm2d",
+    "macs": 25088,
+    "params": 128,
+    "input_shape": [
+      1,
+      64,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      64,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.conv2_x.layer.1.conv2",
+    "type": "Conv2d",
+    "macs": 7225344,
+    "params": 36864,
+    "input_shape": [
+      1,
+      64,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      64,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.conv2_x.layer.1.bn2",
+    "type": "BatchNorm2d",
+    "macs": 25088,
+    "params": 128,
+    "input_shape": [
+      1,
+      64,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      64,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.conv3_x.layer.0.conv1",
+    "type": "Conv2d",
+    "macs": 3612672,
+    "params": 73728,
+    "input_shape": [
+      1,
+      64,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      128,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.conv3_x.layer.0.bn1",
+    "type": "BatchNorm2d",
+    "macs": 12544,
+    "params": 256,
+    "input_shape": [
+      1,
+      128,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      128,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.conv3_x.layer.0.conv2",
+    "type": "Conv2d",
+    "macs": 7225344,
+    "params": 147456,
+    "input_shape": [
+      1,
+      128,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      128,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.conv3_x.layer.0.bn2",
+    "type": "BatchNorm2d",
+    "macs": 12544,
+    "params": 256,
+    "input_shape": [
+      1,
+      128,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      128,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.conv3_x.layer.0.shortcut.0",
+    "type": "Conv2d",
+    "macs": 401408,
+    "params": 8192,
+    "input_shape": [
+      1,
+      64,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      128,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.conv3_x.layer.0.shortcut.1",
+    "type": "BatchNorm2d",
+    "macs": 12544,
+    "params": 256,
+    "input_shape": [
+      1,
+      128,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      128,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.conv3_x.layer.1.conv1",
+    "type": "Conv2d",
+    "macs": 7225344,
+    "params": 147456,
+    "input_shape": [
+      1,
+      128,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      128,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.conv3_x.layer.1.bn1",
+    "type": "BatchNorm2d",
+    "macs": 12544,
+    "params": 256,
+    "input_shape": [
+      1,
+      128,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      128,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.conv3_x.layer.1.conv2",
+    "type": "Conv2d",
+    "macs": 7225344,
+    "params": 147456,
+    "input_shape": [
+      1,
+      128,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      128,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.conv3_x.layer.1.bn2",
+    "type": "BatchNorm2d",
+    "macs": 12544,
+    "params": 256,
+    "input_shape": [
+      1,
+      128,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      128,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.conv4_x.layer.0.conv1",
+    "type": "Conv2d",
+    "macs": 4718592,
+    "params": 294912,
+    "input_shape": [
+      1,
+      128,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.conv4_x.layer.0.bn1",
+    "type": "BatchNorm2d",
+    "macs": 8192,
+    "params": 512,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.conv4_x.layer.0.conv2",
+    "type": "Conv2d",
+    "macs": 9437184,
+    "params": 589824,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.conv4_x.layer.0.bn2",
+    "type": "BatchNorm2d",
+    "macs": 8192,
+    "params": 512,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.conv4_x.layer.0.shortcut.0",
+    "type": "Conv2d",
+    "macs": 524288,
+    "params": 32768,
+    "input_shape": [
+      1,
+      128,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.conv4_x.layer.0.shortcut.1",
+    "type": "BatchNorm2d",
+    "macs": 8192,
+    "params": 512,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.conv4_x.layer.1.conv1",
+    "type": "Conv2d",
+    "macs": 9437184,
+    "params": 589824,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.conv4_x.layer.1.bn1",
+    "type": "BatchNorm2d",
+    "macs": 8192,
+    "params": 512,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.conv4_x.layer.1.conv2",
+    "type": "Conv2d",
+    "macs": 9437184,
+    "params": 589824,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.conv4_x.layer.1.bn2",
+    "type": "BatchNorm2d",
+    "macs": 8192,
+    "params": 512,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.conv5_x.layer.0.conv1",
+    "type": "Conv2d",
+    "macs": 4718592,
+    "params": 1179648,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      512,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "spatial.conv5_x.layer.0.bn1",
+    "type": "BatchNorm2d",
+    "macs": 4096,
+    "params": 1024,
+    "input_shape": [
+      1,
+      512,
+      2,
+      2
+    ],
+    "output_shape": [
+      1,
+      512,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "spatial.conv5_x.layer.0.conv2",
+    "type": "Conv2d",
+    "macs": 9437184,
+    "params": 2359296,
+    "input_shape": [
+      1,
+      512,
+      2,
+      2
+    ],
+    "output_shape": [
+      1,
+      512,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "spatial.conv5_x.layer.0.bn2",
+    "type": "BatchNorm2d",
+    "macs": 4096,
+    "params": 1024,
+    "input_shape": [
+      1,
+      512,
+      2,
+      2
+    ],
+    "output_shape": [
+      1,
+      512,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "spatial.conv5_x.layer.0.shortcut.0",
+    "type": "Conv2d",
+    "macs": 524288,
+    "params": 131072,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      512,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "spatial.conv5_x.layer.0.shortcut.1",
+    "type": "BatchNorm2d",
+    "macs": 4096,
+    "params": 1024,
+    "input_shape": [
+      1,
+      512,
+      2,
+      2
+    ],
+    "output_shape": [
+      1,
+      512,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "spatial.conv5_x.layer.1.conv1",
+    "type": "Conv2d",
+    "macs": 9437184,
+    "params": 2359296,
+    "input_shape": [
+      1,
+      512,
+      2,
+      2
+    ],
+    "output_shape": [
+      1,
+      512,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "spatial.conv5_x.layer.1.bn1",
+    "type": "BatchNorm2d",
+    "macs": 4096,
+    "params": 1024,
+    "input_shape": [
+      1,
+      512,
+      2,
+      2
+    ],
+    "output_shape": [
+      1,
+      512,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "spatial.conv5_x.layer.1.conv2",
+    "type": "Conv2d",
+    "macs": 9437184,
+    "params": 2359296,
+    "input_shape": [
+      1,
+      512,
+      2,
+      2
+    ],
+    "output_shape": [
+      1,
+      512,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "spatial.conv5_x.layer.1.bn2",
+    "type": "BatchNorm2d",
+    "macs": 4096,
+    "params": 1024,
+    "input_shape": [
+      1,
+      512,
+      2,
+      2
+    ],
+    "output_shape": [
+      1,
+      512,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "spatial.global_pool",
+    "type": "AdaptiveMaxPool2d",
+    "macs": 512,
+    "params": 0,
+    "input_shape": [
+      1,
+      512,
+      2,
+      2
+    ],
+    "output_shape": [
+      1,
+      512,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.fc.1",
+    "type": "Linear",
+    "macs": 65664,
+    "params": 65664,
+    "input_shape": [
+      1,
+      512
+    ],
+    "output_shape": [
+      1,
+      128
+    ]
+  },
+  {
+    "name": "temporal.mlp_encoder.fc2",
+    "type": "Linear",
+    "macs": 2048,
+    "params": 32,
+    "input_shape": [
+      1,
+      64,
+      1
+    ],
+    "output_shape": [
+      1,
+      64,
+      16
+    ]
+  },
+  {
+    "name": "temporal.mlp_encoder.fc3",
+    "type": "Linear",
+    "macs": 34816,
+    "params": 544,
+    "input_shape": [
+      1,
+      64,
+      16
+    ],
+    "output_shape": [
+      1,
+      64,
+      32
+    ]
+  },
+  {
+    "name": "temporal.transformer.attn",
+    "type": "MultiheadAttention",
+    "macs": 524288,
+    "params": 3168,
+    "input_shape": [
+      1,
+      64,
+      32
+    ],
+    "output_shape": [
+      1,
+      64,
+      32
+    ]
+  },
+  {
+    "name": "temporal.transformer.ff.0",
+    "type": "Linear",
+    "macs": 135168,
+    "params": 2112,
+    "input_shape": [
+      1,
+      64,
+      32
+    ],
+    "output_shape": [
+      1,
+      64,
+      64
+    ]
+  },
+  {
+    "name": "temporal.transformer.ff.3",
+    "type": "Linear",
+    "macs": 133120,
+    "params": 2080,
+    "input_shape": [
+      1,
+      64,
+      64
+    ],
+    "output_shape": [
+      1,
+      64,
+      32
+    ]
+  },
+  {
+    "name": "temporal.bilstm.bilstm",
+    "type": "LSTM",
+    "macs": 3170304,
+    "params": 50176,
+    "input_shape": [
+      1,
+      64,
+      32
+    ],
+    "output_shape": [
+      1,
+      64,
+      128
+    ]
+  },
+  {
+    "name": "classifier.fc4",
+    "type": "Linear",
+    "macs": 32896,
+    "params": 32896,
+    "input_shape": [
+      1,
+      256
+    ],
+    "output_shape": [
+      1,
+      128
+    ]
+  },
+  {
+    "name": "classifier.fc5",
+    "type": "Linear",
+    "macs": 8256,
+    "params": 8256,
+    "input_shape": [
+      1,
+      128
+    ],
+    "output_shape": [
+      1,
+      64
+    ]
+  },
+  {
+    "name": "classifier.fc6",
+    "type": "Linear",
+    "macs": 325,
+    "params": 325,
+    "input_shape": [
+      1,
+      64
+    ],
+    "output_shape": [
+      1,
+      5
+    ]
+  }
+]

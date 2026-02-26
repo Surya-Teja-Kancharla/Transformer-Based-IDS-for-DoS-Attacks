@@ -1,0 +1,111 @@
+# ============================================================
+# FYP — Res-TranBiLSTM & Proposed Lightweight IDS
+# Shared virtual environment for ExistingImplementation
+# and ProposedImplementation (both phases).
+#
+# GPU  : NVIDIA RTX 2050 (4 GB VRAM)
+# CUDA : 11.8
+# Python: 3.11.8
+#
+# INSTALL ORDER — run these three commands in sequence:
+#
+#   Step 1: Install PyTorch with CUDA 11.8 (must come first):
+#   pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 --index-url https://download.pytorch.org/whl/cu118
+#
+#   Step 2: Install everything else:
+#   pip install -r requirements.txt
+#
+#   Step 3: Verify GPU is visible:
+#   python -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0))"
+#
+# NOTE: PyTorch is listed below for reference only (pinned comment).
+#       Always install it via the --index-url command above so that
+#       the correct CUDA 11.8 wheel is fetched. Installing via plain
+#       pip install torch will fetch a CPU-only build.
+# ============================================================
+
+# ── NumPy (MUST be <2.0 — PyTorch 2.1.x was compiled against NumPy 1.x) ──
+numpy==1.26.4
+
+# ── Core Deep Learning ────────────────────────────────────────────────────
+# torch==2.1.2+cu118        # install via --index-url command above, not here
+# torchvision==0.16.2+cu118 # install via --index-url command above, not here
+# torchaudio==2.1.2+cu118   # install via --index-url command above, not here
+
+# ── Data Science & ML ─────────────────────────────────────────────────────
+pandas==2.2.3
+scikit-learn==1.4.2
+scipy==1.17.1
+imbalanced-learn==0.12.3
+sklearn-compat==0.1.5
+
+# ── Image Processing ──────────────────────────────────────────────────────
+# scipy.ndimage.zoom used for bicubic 8x8->28x28 upsampling (covered by scipy above)
+# opencv-python used as faster optional fallback for the same upsampling
+opencv-python==4.8.1.78
+Pillow==12.0.0
+
+# ── Visualisation ─────────────────────────────────────────────────────────
+matplotlib==3.10.8
+seaborn==0.13.2
+
+# ── Progress Bars ─────────────────────────────────────────────────────────
+tqdm==4.67.3
+
+# ── Configuration ─────────────────────────────────────────────────────────
+PyYAML==6.0.3
+
+# ── Logging & Experiment Tracking ─────────────────────────────────────────
+tensorboard==2.20.0
+tensorboard-data-server==0.7.2
+grpcio==1.78.1
+Markdown==3.10.2
+Werkzeug==3.1.6
+protobuf==6.33.5
+
+# ── Data Storage ──────────────────────────────────────────────────────────
+joblib==1.5.3
+h5py==3.15.1
+
+# ── Notebook Support (EDA, result analysis) ───────────────────────────────
+jupyterlab==4.5.5
+ipywidgets==8.1.8
+nbformat==5.10.4
+ipykernel==7.2.0
+ipython==9.10.0
+jupyter_client==8.8.0
+jupyter_core==5.9.1
+jupyter_server==2.17.0
+jupyter-lsp==2.3.0
+jupyterlab_server==2.28.0
+nbclient==0.10.4
+nbconvert==7.17.0
+
+# ── Testing ───────────────────────────────────────────────────────────────
+pytest==9.0.2
+# pytest-cov not present in current environment — install separately if needed:
+# pip install pytest-cov
+
+# ── Code Quality ──────────────────────────────────────────────────────────
+black==26.1.0
+flake8==7.3.0
+
+# ── Utilities (dependencies, pinned for full reproducibility) ─────────────
+sympy==1.14.0
+networkx==3.6.1
+filelock==3.20.0
+fsspec==2025.12.0
+packaging==26.0
+typing_extensions==4.15.0
+psutil==7.2.2
+six==1.17.0
+python-dateutil==2.9.0.post0
+pytz==2025.2
+tzdata==2025.3
+requests==2.32.5
+urllib3==1.26.13
+certifi==2022.12.7
+charset-normalizer==2.1.1
+idna==3.4
+colorama==0.4.6
+threadpoolctl==3.6.0

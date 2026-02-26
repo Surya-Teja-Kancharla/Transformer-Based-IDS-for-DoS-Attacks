@@ -1,0 +1,137 @@
+# ============================================================
+# .gitignore — FYP Root
+# Covers ExistingImplementation/ (Phase 1) and
+#         ProposedImplementation/ (Phase 2)
+# ============================================================
+
+
+# ── Virtual Environments ──────────────────────────────────
+FYP_env/
+venv/
+.venv/
+env/
+ENV/
+
+
+# ── Python Bytecode ───────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+
+# ── Dataset — Raw CSV (too large for Git, ~500MB) ─────────
+# Re-download from: https://www.unb.ca/cic/datasets/ids-2017.html
+# Place at: {Phase}/data/raw/Wednesday-workingHours.csv
+ExistingImplementation/data/raw/*.csv
+ProposedImplementation/data/raw/*.csv
+
+
+# ── Preprocessed / Augmented Data (auto-generated) ───────
+# These are rebuilt by running: python src/train.py --force-rerun
+# Excluded because .npy files can be 1–5 GB total
+ExistingImplementation/data/augmented/
+ExistingImplementation/data/processed/
+ProposedImplementation/data/augmented/
+ProposedImplementation/data/processed/
+
+
+# ── Model Checkpoints (auto-generated, can be large) ─────
+ExistingImplementation/results/checkpoints/
+ProposedImplementation/results/checkpoints/
+
+
+# ── Generated Plots (auto-generated PNGs) ────────────────
+ExistingImplementation/results/plots/
+ProposedImplementation/results/plots/
+
+
+# ── Log Files (auto-generated per run) ───────────────────
+ExistingImplementation/logs/
+ProposedImplementation/logs/
+
+
+# ── Metrics JSON — keep in Git (small, important) ─────────
+# results/metrics/*.json ARE tracked — they contain the
+# final accuracy, FLOPs, and parameter numbers for the FYP.
+!ExistingImplementation/results/metrics/
+!ExistingImplementation/results/metrics/*.json
+!ProposedImplementation/results/metrics/
+!ProposedImplementation/results/metrics/*.json
+
+
+# ── Backup / Temp Files ───────────────────────────────────
+*.bak
+*.tmp
+*.swp
+*.swo
+*~
+
+
+# ── Jupyter Notebooks ─────────────────────────────────────
+# Track .ipynb source files but ignore checkpoint folders
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+
+# ── OS-generated Files ────────────────────────────────────
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+
+# ── IDE / Editor ──────────────────────────────────────────
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm / IntelliJ
+.idea/
+*.iml
+
+# Vim / Emacs
+*.swp
+*.swo
+\#*\#
+.\#*
+
+
+# ── TensorBoard Event Files (large, auto-generated) ───────
+logs/tensorboard/
+**/tensorboard/
+events.out.tfevents.*
+
+
+# ── Build / Distribution ──────────────────────────────────
+dist/
+build/
+*.egg-info/
+.eggs/
+
+
+# ── Testing & Coverage ────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+
+# ── Type Checking ─────────────────────────────────────────
+.mypy_cache/
+.dmypy.json
+
+
+# ── Misc ──────────────────────────────────────────────────
+*.log
+pip-log.txt
+pip-delete-this-directory.txt

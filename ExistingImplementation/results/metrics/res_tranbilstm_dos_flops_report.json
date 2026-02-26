@@ -1,0 +1,23 @@
+{
+  "total_macs": 126596741,
+  "total_flops": 253193482,
+  "total_gmacs": 0.126597,
+  "total_gflops": 0.253193,
+  "total_params": 11334117,
+  "total_params_mb": 45.336,
+  "by_type": {
+    "Conv2d": 122151936,
+    "BatchNorm2d": 324864,
+    "MaxPool2d": 12544,
+    "AdaptiveMaxPool2d": 512,
+    "Linear": 412293,
+    "MultiheadAttention": 524288,
+    "LSTM": 3170304
+  },
+  "by_module": {
+    "spatial": 122555520,
+    "temporal": 3999744,
+    "classifier": 41477
+  },
+  "batch_size": 1
+}

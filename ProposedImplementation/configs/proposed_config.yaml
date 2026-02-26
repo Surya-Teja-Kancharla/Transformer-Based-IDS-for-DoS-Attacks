@@ -1,0 +1,71 @@
+# ============================================================
+# proposed_config.yaml
+# Lightweight IDS Model — CIC-IDS2017 DoS subset
+# ProposedImplementation
+# ============================================================
+
+experiment:
+  name: "lightweight_ids_dos"
+  description: "Lightweight DSConv+LinearAttn+BiGRU IDS for IoT/fog deployment"
+  seed: 42
+
+data:
+  dataset: "CIC-IDS2017"
+  csv_path: "data/raw/Wednesday-workingHours.csv"
+  processed_dir: "data/processed"
+  augmented_dir: "data/augmented"
+  n_features: 64
+  spatial_small: 8
+  spatial_large: 28
+  train_ratio: 0.80
+  val_ratio: 0.10
+  test_ratio: 0.10
+  num_classes: 5
+  class_names:
+    - "BENIGN"
+    - "DoS_slowloris"
+    - "DoS_Slowhttptest"
+    - "DoS_Hulk"
+    - "DoS_GoldenEye"
+
+smote_enn:
+  enabled: true
+  target_per_class: 20000
+
+spatial:
+  type: "lightweight" # DSConv + SE + InvertedResidual
+  in_channels: 1
+  output_dim: 128
+  dropout: 0.5
+
+temporal:
+  type: "efficient" # LinearAttn + BiGRU
+  seq_len: 64
+  d_model: 32
+  n_heads: 4
+  ff_hidden: 64
+  gru_hidden: 64
+  dropout: 0.5
+
+classification:
+  input_dim: 256
+  num_classes: 5
+  dropout: 0.5
+
+training:
+  batch_size: 256
+  learning_rate: 0.0001
+  optimizer: "adam"
+  dropout: 0.5
+  max_epochs: 100
+  patience: 10
+  grad_clip: 1.0
+  num_workers: 4
+  device: "cuda"
+
+paths:
+  checkpoint_dir: "results/checkpoints"
+  metrics_dir: "results/metrics"
+  plots_dir: "results/plots"
+  log_dir: "logs"
+  tensorboard_dir: "logs/tensorboard"
