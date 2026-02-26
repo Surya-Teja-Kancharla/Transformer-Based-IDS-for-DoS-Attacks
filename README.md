@@ -1,4 +1,4 @@
-# FYP — Transformer-Based Intrusion Detection System
+# FYP - Transformer-Based Intrusion Detection System
 
 ## Project Structure
 
@@ -72,8 +72,9 @@ Download CIC-IDS2017 from:
 https://www.unb.ca/cic/datasets/ids-2017.html
 
 Place the CSV files inside:
+
 - `ExistingImplementation/data/raw/`
-- `ProposedImplementation/data/raw/`  (or symlink)
+- `ProposedImplementation/data/raw/` (or symlink)
 
 ## Running
 
