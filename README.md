@@ -1,4 +1,4 @@
-# FYP — Ensemble-TranBiLSTM: Lightweight Intrusion Detection for IoT Fog Nodes
+# FYP - Ensemble-TranBiLSTM: Lightweight Intrusion Detection for IoT Fog Nodes
 
 Final Year Project (BTech) — Implementation of a proposed improvement to **Wang et al. (2023)** *Res-TranBiLSTM* for network intrusion detection, targeting fog-node deployment in IoT environments.
 
