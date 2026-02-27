@@ -236,7 +236,7 @@ Phase 1 and Phase 2 use identical settings for all non-spatial, non-augmentation
 - Same feature selection (SelectKBest, k=64)
 - Same 28×28 bicubic upsampling
 - Same training target (15,000 samples/class)
-- Same batch size, learning rate, dropout, early stopping patience
+- Same learning rate, dropout, early stopping patience
 - Same classification head (FC-4 → FC-5 → FC-6)
 
 ---
