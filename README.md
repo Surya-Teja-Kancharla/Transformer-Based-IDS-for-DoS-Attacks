@@ -123,7 +123,7 @@ spatial_feat (128,)                  spatial_feat (128,)
 | MobileNetV2 | Local spatial patterns in the 28×28 traffic image | Depthwise separable convolutions, ReLU6 |
 | EfficientNet-B0 | Channel-wise feature relationships | Squeeze-and-Excitation attention, SiLU |
 
-The two models examine the same traffic image through different mathematical lenses. Averaging their feature vectors (soft ensemble) reduces overconfidence — especially important for Heartbleed (11 real training samples) where a single model may be wildly wrong.
+The two models examine the same traffic image through different mathematical lenses. Averaging their feature vectors (soft ensemble) reduces overconfidence.
 
 ---
 

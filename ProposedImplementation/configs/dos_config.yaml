@@ -32,14 +32,13 @@ data:
   train_ratio:   0.80
   val_ratio:     0.10
   test_ratio:    0.10
-  num_classes:   6           # BENIGN + 4 DoS types + Heartbleed
+  num_classes:   5           # BENIGN + 4 DoS types
   class_names:
     - "BENIGN"
     - "DoS_slowloris"
     - "DoS_Slowhttptest"
     - "DoS_Hulk"
     - "DoS_GoldenEye"
-    - "Heartbleed"
 
 # ----------------------------------------------------------
 # CTGAN (Phase 2 replacement for SMOTE-ENN from Phase 1)
