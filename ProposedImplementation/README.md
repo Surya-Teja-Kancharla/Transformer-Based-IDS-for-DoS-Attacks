@@ -1,4 +1,4 @@
-# Phase 2 — Proposed Implementation: Ensemble-Res-TranBiLSTM
+# Phase 2 — Proposed Implementation: Ensemble-TranBiLSTM
 
 Proposed improvement over **Wang et al. (2023)** — _"Res-TranBiLSTM: A Hybrid Deep Learning Model for Network Intrusion Detection"_ — applied to the DoS-only subset of the **CIC-IDS2017** dataset (Wednesday traffic capture).
 
@@ -8,7 +8,7 @@ This is Phase 2 of the FYP. It replaces the single heavy ResNet-18 spatial branc
 
 ## Results (Phase 2 vs Phase 1 Baseline)
 
-| Metric           | Phase 1 (Res-TranBiLSTM) | Phase 2 (Ensemble-Res-TranBiLSTM)          | Change     |
+| Metric           | Phase 1 (Res-TranBiLSTM) | Phase 2 (Ensemble-TranBiLSTM)              | Change     |
 | ---------------- | ------------------------ | ------------------------------------------ | ---------- |
 | Accuracy         | 98.90%                   | **99.15%**                                 | +0.25%     |
 | Precision        | 97.03%                   | **95.97%**                                 | −1.06%     |

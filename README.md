@@ -1,6 +1,6 @@
 # FYP - Ensemble-TranBiLSTM: Lightweight Intrusion Detection for IoT Fog Nodes
 
-Final Year Project (BTech) — Implementation of a proposed improvement to **Wang et al. (2023)** *Res-TranBiLSTM* for network intrusion detection, targeting fog-node deployment in IoT environments.
+Final Year Project (BTech) — Implementation of a proposed improvement to **Wang et al. (2023)** _Res-TranBiLSTM_ for network intrusion detection, targeting fog-node deployment in IoT environments.
 
 **Dataset:** CIC-IDS2017 (Wednesday DoS subset) — Sharafaldin et al., 2018  
 **Hardware:** NVIDIA RTX 2050 (4GB VRAM), 12GB RAM, Windows 11  
@@ -18,19 +18,19 @@ This project answers that call: the ResNet-18 spatial branch is replaced with a 
 
 ## Results at a Glance
 
-| | Phase 1 · Res-TranBiLSTM | Phase 2 · Ensemble-Res-TranBiLSTM |
-|---|---|---|
-| **Accuracy** | 98.90% | **99.15%** |
-| **Precision** | 97.03% | 95.97% |
-| **Recall** | 99.15% | **99.20%** |
-| **F1-Score** | 98.06% | 97.54% |
-| **Parameters** | 11,334,117 | **3,243,238** (−71%) |
-| **Model Size** | 45.34 MB | **12.97 MB** (−71%) |
-| **GMACs** | 0.1266 | **0.1138** (−10%) |
-| **GFLOPs** | 0.2532 | **0.2276** (−10%) |
-| Spatial branch | ResNet-18 (11.2M) | MobileNetV2 + EfficientNet-B0 (3.2M) |
-| Augmentation | SMOTE-ENN | CTGAN |
-| Training time | ~22 min | ~75 min (incl. CTGAN) |
+|                | Phase 1 · Res-TranBiLSTM | Phase 2 · Ensemble-TranBiLSTM        |
+| -------------- | ------------------------ | ------------------------------------ |
+| **Accuracy**   | 98.90%                   | **99.15%**                           |
+| **Precision**  | 97.03%                   | 95.97%                               |
+| **Recall**     | 99.15%                   | **99.20%**                           |
+| **F1-Score**   | 98.06%                   | 97.54%                               |
+| **Parameters** | 11,334,117               | **3,243,238** (−71%)                 |
+| **Model Size** | 45.34 MB                 | **12.97 MB** (−71%)                  |
+| **GMACs**      | 0.1266                   | **0.1138** (−10%)                    |
+| **GFLOPs**     | 0.2532                   | **0.2276** (−10%)                    |
+| Spatial branch | ResNet-18 (11.2M)        | MobileNetV2 + EfficientNet-B0 (3.2M) |
+| Augmentation   | SMOTE-ENN                | CTGAN                                |
+| Training time  | ~22 min                  | ~75 min (incl. CTGAN)                |
 
 > The combined MobileNetV2 + EfficientNet-B0 ensemble (3.2M params) costs less than one ResNet-18 (11.2M), validating the fog deployment argument: two specialised lightweight models are collectively cheaper than one general-purpose heavy model.
 
@@ -118,10 +118,10 @@ spatial_feat (128,)                  spatial_feat (128,)
 
 ### Ensemble diversity (why two models)
 
-| Model | What it captures | Key mechanism |
-|---|---|---|
-| MobileNetV2 | Local spatial patterns in the 28×28 traffic image | Depthwise separable convolutions, ReLU6 |
-| EfficientNet-B0 | Channel-wise feature relationships | Squeeze-and-Excitation attention, SiLU |
+| Model           | What it captures                                  | Key mechanism                           |
+| --------------- | ------------------------------------------------- | --------------------------------------- |
+| MobileNetV2     | Local spatial patterns in the 28×28 traffic image | Depthwise separable convolutions, ReLU6 |
+| EfficientNet-B0 | Channel-wise feature relationships                | Squeeze-and-Excitation attention, SiLU  |
 
 The two models examine the same traffic image through different mathematical lenses. Averaging their feature vectors (soft ensemble) reduces overconfidence.
 
@@ -133,7 +133,7 @@ The two models examine the same traffic image through different mathematical len
 
 - Python 3.11.8
 - NVIDIA GPU with CUDA 11.8 (tested on RTX 2050, 4GB VRAM)
-- Windows 10/11 or Linux 
+- Windows 10/11 or Linux
 
 ### 1. Install dependencies
 
@@ -199,7 +199,7 @@ python src/evaluation/comparison_report.py \
 
 Wang et al. (2023) designed Res-TranBiLSTM for **fog-node deployment** on IoT edge devices (smart routers, gateways). However, 99.1% of the model's parameters live in the ResNet-18 spatial branch alone — a standard-convolution backbone originally designed for 224×224 ImageNet images running on datacenter GPUs.
 
-The authors acknowledged this in their conclusion: *"due to the instability of the data captured in the real network environment, the proposed model is only conducted in simulation experiments"* and called for *"more suitable methods for converting network traffic data to 2D images"* as future work.
+The authors acknowledged this in their conclusion: _"due to the instability of the data captured in the real network environment, the proposed model is only conducted in simulation experiments"_ and called for _"more suitable methods for converting network traffic data to 2D images"_ as future work.
 
 ### Why an ensemble of two lightweight models
 
@@ -245,12 +245,12 @@ Phase 1 and Phase 2 use identical settings for all non-spatial, non-augmentation
 
 ### Critical version pins
 
-| Package | Version | Reason |
-|---|---|---|
-| `numpy` | 1.26.4 | PyTorch 2.1.x compiled against NumPy 1.x ABI |
-| `opencv-python` | 4.8.1.78 | OpenCV 4.9+ requires NumPy ≥ 2.0 |
-| `scikit-learn` | 1.4.2 | imbalanced-learn 0.12.3 requires sklearn < 1.6 |
-| `imbalanced-learn` | 0.12.3 | Must match scikit-learn pin |
+| Package            | Version  | Reason                                         |
+| ------------------ | -------- | ---------------------------------------------- |
+| `numpy`            | 1.26.4   | PyTorch 2.1.x compiled against NumPy 1.x ABI   |
+| `opencv-python`    | 4.8.1.78 | OpenCV 4.9+ requires NumPy ≥ 2.0               |
+| `scikit-learn`     | 1.4.2    | imbalanced-learn 0.12.3 requires sklearn < 1.6 |
+| `imbalanced-learn` | 0.12.3   | Must match scikit-learn pin                    |
 
 ### Windows DataLoader
 
@@ -260,14 +260,14 @@ Phase 1 and Phase 2 use identical settings for all non-spatial, non-augmentation
 
 ## References
 
-Wang, Y. et al. (2023). *Res-TranBiLSTM: An Efficient Intrusion Detection Method for the Internet of Things*. Computers & Security / IEEE Access.
+Wang, Y. et al. (2023). _Res-TranBiLSTM: An Efficient Intrusion Detection Method for the Internet of Things_. Computers & Security / IEEE Access.
 
-Sharafaldin, I., Lashkari, A. H., & Ghorbani, A. A. (2018). *Toward Generating a New Intrusion Detection Dataset and Intrusion Traffic Characterization*. ICISSP. [CIC-IDS2017](https://www.unb.ca/cic/datasets/ids-2017.html).
+Sharafaldin, I., Lashkari, A. H., & Ghorbani, A. A. (2018). _Toward Generating a New Intrusion Detection Dataset and Intrusion Traffic Characterization_. ICISSP. [CIC-IDS2017](https://www.unb.ca/cic/datasets/ids-2017.html).
 
-Sandler, M. et al. (2018). *MobileNetV2: Inverted Residuals and Linear Bottlenecks*. CVPR.
+Sandler, M. et al. (2018). _MobileNetV2: Inverted Residuals and Linear Bottlenecks_. CVPR.
 
-Tan, M. & Le, Q. V. (2019). *EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks*. ICML.
+Tan, M. & Le, Q. V. (2019). _EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks_. ICML.
 
-Xu, L. et al. (2019). *Modeling Tabular Data using Conditional GAN*. NeurIPS.
+Xu, L. et al. (2019). _Modeling Tabular Data using Conditional GAN_. NeurIPS.
 
-Hu, J. et al. (2018). *Squeeze-and-Excitation Networks*. CVPR.
+Hu, J. et al. (2018). _Squeeze-and-Excitation Networks_. CVPR.
