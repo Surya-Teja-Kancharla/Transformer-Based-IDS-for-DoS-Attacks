@@ -133,7 +133,7 @@ The two models examine the same traffic image through different mathematical len
 
 - Python 3.11.8
 - NVIDIA GPU with CUDA 11.8 (tested on RTX 2050, 4GB VRAM)
-- Windows 10/11 or Linux
+- Windows 10/11 or Linux 
 
 ### 1. Install dependencies
 
