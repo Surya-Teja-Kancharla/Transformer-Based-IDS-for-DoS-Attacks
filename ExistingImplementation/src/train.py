@@ -6,7 +6,7 @@ Main training entry point for Res-TranBiLSTM (ExistingImplementation).
 Usage:
   # From ExistingImplementation/ directory:
   python src/train.py --config configs/dos_config.yaml
-  python src/train.py --config configs/dos_config.yaml --csv data/raw/Wednesday-workingHours.pcap_ISCX.csv
+  python src/train.py --config configs/dos_config.yaml --csv data/raw/Wednesday-workingHours.csv
   python src/train.py --config configs/dos_config.yaml --load-cache  # skip preprocessing
 
 Author: FYP Implementation
