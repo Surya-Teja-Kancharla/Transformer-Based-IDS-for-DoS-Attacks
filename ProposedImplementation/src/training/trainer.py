@@ -1,20 +1,26 @@
 """
 trainer.py
 ==========
-Training loop for Res-TranBiLSTM with early stopping.
+Training loop for Lightweight-CTGAN-IDS with early stopping.
 
-Paper (Wang et al., 2023) Section 4.2:
+Intentionally mirrors ExistingImplementation/src/training/trainer.py
+structure exactly, so Phase 1 vs Phase 2 comparisons are apples-to-apples.
+The only difference is the model passed in at construction time.
+
+Paper (Wang et al., 2023) Section 4.2 — same hyperparameters preserved
+for fair Phase 1 vs Phase 2 comparison:
   "We use the Adam optimizer to train our model."
   "To avoid model overfitting, we use early-stopping criteria to train
    Res-TranBiLSTM — that is, we stop the training process once the
    validation accuracy begins decreasing."
 
-Table 10 hyperparameters:
-  Batch_Size     = 256
+Table 10 hyperparameters (paper values; see dos_config.yaml for actuals):
+  Batch_Size     = 256 (paper) → 128 (RTX 2050 4GB VRAM constraint)
   Learning_Rate  = 0.0001
   Dropout        = 0.5
+  Max_Epochs     = 30 (paper) → 20 (early stopping handles convergence)
 
-Author: FYP Implementation
+Author: FYP ProposedImplementation
 """
 
 from __future__ import annotations
@@ -32,8 +38,15 @@ from torch.optim import Adam
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
+
+
+def _print_and_log(msg: str) -> None:
+    """Print to terminal AND write to log file."""
+    print(msg, flush=True)
+    logger.info(msg)
 
 
 class EarlyStopping:
@@ -77,13 +90,13 @@ class EarlyStopping:
         else:
             self.counter += 1
             if self.verbose:
-                logger.info(
+                _print_and_log(
                     f"  EarlyStopping: no improvement for {self.counter}/{self.patience} epochs"
                 )
             if self.counter >= self.patience:
                 self.should_stop = True
                 if self.verbose:
-                    logger.info("  EarlyStopping: stopping training.")
+                    _print_and_log("  EarlyStopping: stopping training.")
 
         return self.should_stop
 
@@ -95,7 +108,7 @@ class EarlyStopping:
 
 class ResTranBiLSTMTrainer:
     """
-    Full training engine for Res-TranBiLSTM.
+    Full training engine for Lightweight-CTGAN-IDS.
 
     Handles:
       - Dual-branch DataLoader construction
@@ -109,13 +122,13 @@ class ResTranBiLSTMTrainer:
     Parameters
     ----------
     model : nn.Module
-        Res-TranBiLSTM model instance.
+        LightweightIDSModel instance (or any dual-branch model).
     device : str
         'cuda' or 'cpu'.
     learning_rate : float
         Adam learning rate (0.0001 per paper).
     batch_size : int
-        Mini-batch size (256 per paper).
+        Mini-batch size (128, reduced from paper's 256 for RTX 2050 4GB VRAM).
     patience : int
         Early stopping patience (epochs without improvement).
     checkpoint_dir : str | Path
@@ -129,7 +142,7 @@ class ResTranBiLSTMTrainer:
         model: nn.Module,
         device: str = "cuda",
         learning_rate: float = 1e-4,
-        batch_size: int = 256,
+        batch_size: int = 128,
         patience: int = 10,
         checkpoint_dir: str = "results/checkpoints",
         log_dir: str = "logs",
@@ -170,8 +183,8 @@ class ResTranBiLSTMTrainer:
             "val_loss":   [], "val_acc":   [],
         }
 
-        logger.info(f"Trainer initialized — device: {self.device}")
-        logger.info(f"  LR={learning_rate}, batch_size={batch_size}, patience={patience}")
+        _print_and_log(f"Trainer initialized — device: {self.device}")
+        _print_and_log(f"  LR={learning_rate}, batch_size={batch_size}, patience={patience}")
 
     # ------------------------------------------------------------------
     # DataLoader construction
@@ -210,6 +223,9 @@ class ResTranBiLSTMTrainer:
         train_ds = _make_dataset(X_img_train, X_seq_train, y_train)
         val_ds   = _make_dataset(X_img_val,   X_seq_val,   y_val)
 
+        # num_workers=0 on Windows — multiprocessing workers cause
+        # "RuntimeError: An attempt has been made to start a new process"
+        # when using spawn start method. 0 = load data in main process.
         train_loader = DataLoader(
             train_ds, batch_size=self.batch_size, shuffle=True,
             num_workers=0, pin_memory=True, drop_last=False,
@@ -219,7 +235,7 @@ class ResTranBiLSTMTrainer:
             num_workers=0, pin_memory=True,
         )
 
-        logger.info(
+        _print_and_log(
             f"DataLoaders: train={len(train_ds):,} | val={len(val_ds):,} "
             f"| batch={self.batch_size}"
         )
@@ -233,7 +249,7 @@ class ResTranBiLSTMTrainer:
         self,
         train_loader: DataLoader,
         val_loader: DataLoader,
-        n_epochs: int = 100,
+        n_epochs: int = 20,
         save_name: str = "best_model",
     ) -> Dict[str, List[float]]:
         """
@@ -243,7 +259,7 @@ class ResTranBiLSTMTrainer:
         ----------
         train_loader : DataLoader
         val_loader   : DataLoader
-        n_epochs     : int — maximum epochs
+        n_epochs     : int — maximum epochs (default 20, reduced from 30)
         save_name    : str — prefix for checkpoint filename
 
         Returns
@@ -253,20 +269,22 @@ class ResTranBiLSTMTrainer:
         best_val_acc = 0.0
         t_start = time.time()
 
-        logger.info(f"\nStarting training for up to {n_epochs} epochs...")
-        logger.info("=" * 60)
+        _print_and_log(f"\n{'='*60}")
+        _print_and_log(f"Starting training for up to {n_epochs} epochs...")
+        _print_and_log(f"{'='*60}")
 
         for epoch in range(1, n_epochs + 1):
             t_epoch = time.time()
 
-            # Train
-            train_loss, train_acc = self._train_epoch(train_loader)
+            # Train — with tqdm batch progress bar
+            train_loss, train_acc = self._train_epoch(train_loader, epoch, n_epochs)
 
-            # Validate
+            # Validate — with tqdm batch progress bar
             val_loss, val_acc = self._eval_epoch(val_loader)
 
             # LR schedule
             self.scheduler.step(val_acc)
+            current_lr = self.optimizer.param_groups[0]["lr"]
 
             # Record history
             self.history["train_loss"].append(train_loss)
@@ -275,46 +293,66 @@ class ResTranBiLSTMTrainer:
             self.history["val_acc"].append(val_acc)
 
             # TensorBoard logging
-            self.writer.add_scalar("Loss/train",    train_loss, epoch)
-            self.writer.add_scalar("Loss/val",      val_loss,   epoch)
-            self.writer.add_scalar("Accuracy/train", train_acc, epoch)
-            self.writer.add_scalar("Accuracy/val",  val_acc,   epoch)
-            self.writer.add_scalar(
-                "LR", self.optimizer.param_groups[0]["lr"], epoch
-            )
+            self.writer.add_scalar("Loss/train",     train_loss, epoch)
+            self.writer.add_scalar("Loss/val",       val_loss,   epoch)
+            self.writer.add_scalar("Accuracy/train", train_acc,  epoch)
+            self.writer.add_scalar("Accuracy/val",   val_acc,    epoch)
+            self.writer.add_scalar("LR",             current_lr, epoch)
 
             epoch_time = time.time() - t_epoch
-            logger.info(
+
+            # Always visible in terminal AND log file
+            epoch_msg = (
                 f"Epoch {epoch:3d}/{n_epochs} | "
-                f"Train Loss: {train_loss:.4f} Acc: {train_acc:.4f} | "
-                f"Val Loss: {val_loss:.4f} Acc: {val_acc:.4f} | "
+                f"Train Loss: {train_loss:.4f}  Acc: {train_acc*100:.2f}% | "
+                f"Val Loss: {val_loss:.4f}  Acc: {val_acc*100:.2f}% | "
+                f"LR: {current_lr:.2e} | "
                 f"Time: {epoch_time:.1f}s"
             )
+            _print_and_log(epoch_msg)
 
             # Save best model
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
                 self._save_checkpoint(save_name, epoch, val_acc, val_loss)
-                logger.info(f"  ✓ New best val_acc: {val_acc:.4f} — checkpoint saved")
+                _print_and_log(
+                    f"  ✓ New best val_acc: {val_acc*100:.2f}% — checkpoint saved"
+                )
 
             # Early stopping
             if self.early_stopping(val_acc):
-                logger.info(f"Early stopping at epoch {epoch}")
+                _print_and_log(f"Early stopping triggered at epoch {epoch}")
                 break
 
         total_time = time.time() - t_start
-        logger.info(f"\nTraining complete in {total_time:.1f}s | Best val_acc: {best_val_acc:.4f}")
+        _print_and_log(
+            f"\nTraining complete in {total_time/60:.1f} min | "
+            f"Best val_acc: {best_val_acc*100:.2f}%"
+        )
 
         self._save_history(save_name)
         self.writer.close()
 
         return self.history
 
-    def _train_epoch(self, loader: DataLoader) -> Tuple[float, float]:
+    def _train_epoch(
+        self,
+        loader: DataLoader,
+        epoch: int,
+        n_epochs: int,
+    ) -> Tuple[float, float]:
         self.model.train()
         total_loss, total_correct, total_samples = 0.0, 0, 0
 
-        for x_img, x_seq, y in loader:
+        pbar = tqdm(
+            loader,
+            desc=f"  Epoch {epoch:3d}/{n_epochs} [Train]",
+            leave=False,
+            unit="batch",
+            dynamic_ncols=True,
+        )
+
+        for x_img, x_seq, y in pbar:
             x_img = x_img.to(self.device)
             x_seq = x_seq.to(self.device)
             y     = y.to(self.device)
@@ -331,6 +369,12 @@ class ResTranBiLSTMTrainer:
             total_correct += (logits.argmax(1) == y).sum().item()
             total_samples += len(y)
 
+            # Live batch stats in tqdm bar
+            pbar.set_postfix({
+                "loss": f"{total_loss/total_samples:.4f}",
+                "acc":  f"{total_correct/total_samples*100:.2f}%",
+            })
+
         avg_loss = total_loss / total_samples
         avg_acc  = total_correct / total_samples
         return avg_loss, avg_acc
@@ -340,7 +384,15 @@ class ResTranBiLSTMTrainer:
         self.model.eval()
         total_loss, total_correct, total_samples = 0.0, 0, 0
 
-        for x_img, x_seq, y in loader:
+        pbar = tqdm(
+            loader,
+            desc="                   [Val]  ",
+            leave=False,
+            unit="batch",
+            dynamic_ncols=True,
+        )
+
+        for x_img, x_seq, y in pbar:
             x_img = x_img.to(self.device)
             x_seq = x_seq.to(self.device)
             y     = y.to(self.device)
@@ -351,6 +403,11 @@ class ResTranBiLSTMTrainer:
             total_loss    += loss.item() * len(y)
             total_correct += (logits.argmax(1) == y).sum().item()
             total_samples += len(y)
+
+            pbar.set_postfix({
+                "loss": f"{total_loss/total_samples:.4f}",
+                "acc":  f"{total_correct/total_samples*100:.2f}%",
+            })
 
         return total_loss / total_samples, total_correct / total_samples
 
@@ -368,9 +425,9 @@ class ResTranBiLSTMTrainer:
         path = self.checkpoint_dir / f"{name}_best.pth"
         torch.save(
             {
-                "epoch":      epoch,
-                "val_acc":    val_acc,
-                "val_loss":   val_loss,
+                "epoch":                epoch,
+                "val_acc":              val_acc,
+                "val_loss":             val_loss,
                 "model_state_dict":     self.model.state_dict(),
                 "optimizer_state_dict": self.optimizer.state_dict(),
             },
@@ -382,9 +439,9 @@ class ResTranBiLSTMTrainer:
         path = self.checkpoint_dir / f"{name}_best.pth"
         ckpt = torch.load(path, map_location=self.device)
         self.model.load_state_dict(ckpt["model_state_dict"])
-        logger.info(
+        _print_and_log(
             f"Loaded checkpoint from epoch {ckpt['epoch']} "
-            f"(val_acc={ckpt['val_acc']:.4f})"
+            f"(val_acc={ckpt['val_acc']*100:.2f}%)"
         )
         return ckpt["epoch"]
 
@@ -392,4 +449,5 @@ class ResTranBiLSTMTrainer:
         path = self.checkpoint_dir / f"{name}_history.json"
         with open(path, "w") as f:
             json.dump(self.history, f, indent=2)
-        logger.info(f"Training history saved: {path}")
+        _print_and_log(f"Training history saved: {path}")
+        

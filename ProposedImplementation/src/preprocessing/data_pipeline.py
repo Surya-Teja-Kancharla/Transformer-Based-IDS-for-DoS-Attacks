@@ -1,10 +1,11 @@
 """
 data_pipeline.py
 ================
-Master preprocessing pipeline for the Res-TranBiLSTM DoS detection study.
+Master preprocessing pipeline for the Lightweight-CTGAN-IDS DoS detection study.
 Orchestrates all preprocessing steps in the correct order per the paper:
 
-  Paper (Wang et al., 2023) Pipeline:
+  Paper (Wang et al., 2023) Pipeline — Phase 2 mirrors Phase 1 exactly,
+  substituting only Step 8 (CTGAN replaces SMOTE-ENN):
     1. Load Wednesday-workingHours.csv
     2. Clean (drop NaN/Inf, remove duplicates, drop metadata cols)
     3. Filter DoS classes only (BENIGN + 4 DoS attack types)
@@ -12,7 +13,7 @@ Orchestrates all preprocessing steps in the correct order per the paper:
     5. Feature selection (64 features per paper)
     6. Train/Val/Test split (80/10/10 or 80/20 per paper)
     7. Min-Max Normalization (fit on train only, apply to all)
-    8. SMOTE-ENN on training set only
+    8. CTGAN on training set only           ← Phase 2 (SMOTE-ENN in Phase 1)
     9. Prepare dual-branch inputs:
        - Spatial branch: 1D (64,) → 2D 8×8 → bicubic 28×28 images
        - Temporal branch: 1D (64,) → sequence (64, 1) for MLP encoding
@@ -25,7 +26,7 @@ Usage:
     # Subsequent runs (load from cache):
     python data_pipeline.py --load-cache
 
-Author: FYP Implementation
+Author: FYP ProposedImplementation
 """
 
 from __future__ import annotations
@@ -42,15 +43,15 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-from preprocessing.dataset_loader import CICIDSDatasetLoader, CLASS_NAMES, DOS_LABEL_MAP
+from preprocessing.dataset_loader  import CICIDSDatasetLoader, CLASS_NAMES, DOS_LABEL_MAP
 from preprocessing.feature_encoder import FeatureSelector, ImageReshaper, TemporalInputFormatter
-from preprocessing.normalizer import MinMaxNormalizer
-from preprocessing.smote_enn import DOSSMOTEENNHandler
+from preprocessing.normalizer       import MinMaxNormalizer
+from preprocessing.ctgan_handler    import CTGANBalancer
 
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Default paths (relative to ExistingImplementation/)
+# Default paths (relative to ProposedImplementation/)
 # ---------------------------------------------------------------------------
 
 DEFAULT_RAW_DIR     = Path("data/raw")
@@ -82,9 +83,13 @@ PIPELINE_CONFIG = {
     "test_ratio": 0.10,
     "stratify": True,
 
-    # SMOTE-ENN
-    "smote_target_per_class": 20_000,  # Memory-safe for 4GB GPU
-    "smote_k_neighbors": 5,
+    # CTGAN — Phase 2 replacement for SMOTE-ENN (Phase 1)
+    # CTGAN learns the true joint feature distribution per class via
+    # Generator/Discriminator training, producing diverse realistic
+    # synthetic minority samples vs SMOTE's linear interpolation.
+    "ctgan_target_per_class": 15_000,  # 15K x 5 classes = 75K total (RTX 2050 safe)
+    "ctgan_epochs": 50,                # CTGAN training epochs per minority class
+    "ctgan_batch_size": 500,           # Must be divisible by pac (default 10)
 
     # Reproducibility
     "random_state": 42,
@@ -101,13 +106,13 @@ class ProcessedDataset:
 
     Attributes
     ----------
-    Spatial branch (for ResNet):
-      X_train_img : (N_train, 1, 28, 28)  float32  — after SMOTE-ENN
+    Spatial branch (for LightweightSpatialExtractor):
+      X_train_img : (N_train, 1, 28, 28)  float32  — after CTGAN
       X_val_img   : (N_val,   1, 28, 28)  float32
       X_test_img  : (N_test,  1, 28, 28)  float32
 
-    Temporal branch (for TranBiLSTM):
-      X_train_seq : (N_train, 64, 1)  float32 — after SMOTE-ENN
+    Temporal branch (for EfficientTemporalExtractor):
+      X_train_seq : (N_train, 64, 1)  float32 — after CTGAN
       X_val_seq   : (N_val,   64, 1)  float32
       X_test_seq  : (N_test,  64, 1)  float32
 
@@ -177,12 +182,12 @@ class ProcessedDataset:
 
 class DOSPreprocessingPipeline:
     """
-    End-to-end preprocessing pipeline for Res-TranBiLSTM DoS detection.
+    End-to-end preprocessing pipeline for Lightweight-CTGAN-IDS DoS detection.
 
     Parameters
     ----------
     base_dir : str | Path
-        Root directory of ExistingImplementation (contains data/, src/).
+        Root directory of ProposedImplementation (contains data/, src/).
     config : dict, optional
         Override any PIPELINE_CONFIG values.
     verbose : bool
@@ -236,7 +241,7 @@ class DOSPreprocessingPipeline:
           3. Split train/val/test (stratified)
           4. Feature selection (fit on train)
           5. Normalization (fit on train)
-          6. SMOTE-ENN (on train only)
+          6. CTGAN (on train only)          ← Phase 2 novelty
           7. Reshape to image + sequence inputs
           8. Save to disk
 
@@ -251,7 +256,7 @@ class DOSPreprocessingPipeline:
         """
         t_pipeline_start = time.time()
         logger.info("\n" + "=" * 65)
-        logger.info("  Res-TranBiLSTM DoS Preprocessing Pipeline")
+        logger.info("  Lightweight-CTGAN-IDS DoS Preprocessing Pipeline")
         logger.info("=" * 65)
 
         # Check cache
@@ -346,20 +351,21 @@ class DOSPreprocessingPipeline:
         self._save_split_csv(X_test_norm, y_test, selected_feature_names,
                              self.processed_dir / "test_normalized.csv")
 
-        # -- Step 5: SMOTE-ENN on training set only --
-        logger.info("\nStep 5: SMOTE-ENN Class Balancing (train only)")
-        logger.info("  [Paper Section 3.2.2: SMOTE + ENN cleaning]")
+        # -- Step 5: CTGAN on training set only --
+        logger.info("\nStep 5: CTGAN Class Balancing (train only)")
+        logger.info("  [Phase 2 novelty: GAN-based distribution learning replaces SMOTE-ENN]")
 
-        smote_handler = DOSSMOTEENNHandler(
-            target_per_class=self.config["smote_target_per_class"],
-            k_neighbors_smote=self.config["smote_k_neighbors"],
+        ctgan_handler = CTGANBalancer(
+            target_per_class=self.config["ctgan_target_per_class"],
+            epochs=self.config.get("ctgan_epochs", 50),
+            batch_size=self.config.get("ctgan_batch_size", 500),
             random_state=self.config["random_state"],
             verbose=self.verbose,
         )
-        X_train_bal, y_train_bal = smote_handler.fit_resample(
+        X_train_bal, y_train_bal = ctgan_handler.fit_resample(
             X_train_norm, y_train
         )
-        logger.info(f"\n{smote_handler.get_balance_report()}")
+        logger.info(f"\n{ctgan_handler.get_balance_report()}")
 
         # Save augmented arrays
         np.save(self.augmented_dir / "X_train_balanced.npy", X_train_bal)
@@ -429,20 +435,34 @@ class DOSPreprocessingPipeline:
     # ------------------------------------------------------------------
 
     def _cache_exists(self) -> bool:
-        manifest = self.augmented_dir / CACHE_MANIFEST_FILE
-        arrays_dir = self.augmented_dir / "arrays"
         required_files = [
             "X_train_img.npy", "X_val_img.npy", "X_test_img.npy",
             "X_train_seq.npy", "X_val_seq.npy", "X_test_seq.npy",
             "y_train.npy", "y_val.npy", "y_test.npy",
         ]
-        if not manifest.exists():
-            return False
-        return all((arrays_dir / f).exists() for f in required_files)
+        # Support both old layout (files in augmented/) and new (in augmented/arrays/)
+        for search_dir in [self.augmented_dir / "arrays", self.augmented_dir]:
+            manifest = search_dir / CACHE_MANIFEST_FILE
+            if manifest.exists() and all((search_dir / f).exists() for f in required_files):
+                return True
+        return False
 
     def _load_cache(self) -> ProcessedDataset:
         logger.info("Loading cached arrays from disk...")
-        d = self.augmented_dir / "arrays"   # arrays saved in arrays/ subdir
+
+        # Support both old flat layout (augmented/) and new subdir (augmented/arrays/)
+        d = None
+        for candidate in [self.augmented_dir / "arrays", self.augmented_dir]:
+            if (candidate / CACHE_MANIFEST_FILE).exists():
+                d = candidate
+                break
+        if d is None:
+            raise FileNotFoundError(
+                f"No pipeline_manifest.json found in {self.augmented_dir} "
+                f"or {self.augmented_dir / 'arrays'}. "
+                f"Run with --force-rerun to rebuild the cache."
+            )
+        logger.info(f"  Cache directory: {d}")
 
         dataset = ProcessedDataset()
         dataset.X_train_img  = np.load(d / "X_train_img.npy")
@@ -458,7 +478,6 @@ class DOSPreprocessingPipeline:
         dataset.y_val   = np.load(d / "y_val.npy")
         dataset.y_test  = np.load(d / "y_test.npy")
 
-        # Load manifest
         with open(d / CACHE_MANIFEST_FILE) as f:
             manifest = json.load(f)
         dataset.class_names   = {int(k): v for k, v in manifest["class_names"].items()}
@@ -477,7 +496,7 @@ class DOSPreprocessingPipeline:
 
           data/augmented/
             arrays/        <- .npy files for fast reload during training
-            smote_output/  <- SMOTE-balanced flat features, CSV sample,
+            ctgan_output/  <- CTGAN-balanced flat features, CSV sample,
                               class distribution summary
         """
         import pandas as pd
@@ -504,18 +523,18 @@ class DOSPreprocessingPipeline:
         # Update _cache_exists lookup path (arrays now in arrays/ subdir)
         # _load_cache is updated correspondingly below.
 
-        # ── smote_output/ subdirectory ────────────────────────────────
-        smote_dir = self.augmented_dir / "smote_output"
-        smote_dir.mkdir(parents=True, exist_ok=True)
+        # ── ctgan_output/ subdirectory ────────────────────────────────
+        ctgan_dir = self.augmented_dir / "ctgan_output"
+        ctgan_dir.mkdir(parents=True, exist_ok=True)
 
         X_flat = arr_dict["X_train_flat"]   # (N, 64) balanced normalised features
         y_bal  = arr_dict["y_train"]         # (N,)   balanced integer labels
 
         # Save full balanced arrays as .npy
-        np.save(smote_dir / "X_train_balanced.npy", X_flat)
-        np.save(smote_dir / "y_train_balanced.npy", y_bal)
+        np.save(ctgan_dir / "X_train_balanced.npy", X_flat)
+        np.save(ctgan_dir / "y_train_balanced.npy", y_bal)
         logger.info(
-            f"  SMOTE arrays saved -> smote_output/ "
+            f"  CTGAN arrays saved -> ctgan_output/ "
             f"[X:{X_flat.shape}, y:{y_bal.shape}]"
         )
 
@@ -523,9 +542,9 @@ class DOSPreprocessingPipeline:
         classes, counts = np.unique(y_bal, return_counts=True)
         total = int(len(y_bal))
         lines = [
-            "SMOTE-ENN Output — Class Distribution Summary",
+            "CTGAN Output — Class Distribution Summary",
             "=" * 55,
-            f"Total training samples after SMOTE-ENN: {total:,}",
+            f"Total training samples after CTGAN: {total:,}",
             "",
             f"  {'Class ID':<10} {'Class Name':<22} {'Count':>10} {'Percent':>9}",
             "  " + "-" * 53,
@@ -542,15 +561,15 @@ class DOSPreprocessingPipeline:
             f"  X_train_flat : {X_flat.shape}  (64 normalised features per sample)",
             f"  y_train      : {y_bal.shape}",
             "",
-            "Files in smote_output/:",
+            "Files in ctgan_output/:",
             "  X_train_balanced.npy  <- full balanced feature matrix",
             "  y_train_balanced.npy  <- corresponding labels",
-            "  smote_balanced_sample.csv  <- 50K-row readable sample",
+            "  ctgan_balanced_sample.csv  <- 50K-row readable sample",
             "  class_distribution.txt     <- this file",
         ]
         summary_text = "\n".join(lines)
-        (smote_dir / "class_distribution.txt").write_text(summary_text)
-        logger.info("  Class distribution -> smote_output/class_distribution.txt")
+        (ctgan_dir / "class_distribution.txt").write_text(summary_text)
+        logger.info("  Class distribution -> ctgan_output/class_distribution.txt")
         logger.info("\n" + summary_text)
 
         # Balanced sample CSV (up to 50K rows — full file can be 100+ MB)
@@ -560,9 +579,9 @@ class DOSPreprocessingPipeline:
         feat_cols = [f"feature_{i:02d}" for i in range(X_flat.shape[1])]
         df = pd.DataFrame(X_flat[idx], columns=feat_cols)
         df["label"] = y_bal[idx]
-        df.to_csv(smote_dir / "smote_balanced_sample.csv", index=False)
+        df.to_csv(ctgan_dir / "ctgan_balanced_sample.csv", index=False)
         logger.info(
-            f"  CSV sample ({max_rows:,} rows) -> smote_output/smote_balanced_sample.csv"
+            f"  CSV sample ({max_rows:,} rows) -> ctgan_output/ctgan_balanced_sample.csv"
         )
 
 
@@ -585,7 +604,10 @@ class DOSPreprocessingPipeline:
             "test_shape": list(test_shape),
             "config": self.config,
         }
-        path = self.augmented_dir / CACHE_MANIFEST_FILE
+        # Save into arrays/ so _cache_exists() can locate it on reload
+        arrays_dir = self.augmented_dir / "arrays"
+        arrays_dir.mkdir(parents=True, exist_ok=True)
+        path = arrays_dir / CACHE_MANIFEST_FILE
         with open(path, "w") as f:
             json.dump(manifest, f, indent=2)
         logger.info(f"  Pipeline manifest saved: {path}")
@@ -616,7 +638,7 @@ class DOSPreprocessingPipeline:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Res-TranBiLSTM DoS Preprocessing Pipeline"
+        description="Lightweight-CTGAN-IDS DoS Preprocessing Pipeline"
     )
     parser.add_argument(
         "--csv",
@@ -628,7 +650,7 @@ def main():
         "--base-dir",
         type=str,
         default=".",
-        help="Path to ExistingImplementation/ root"
+        help="Path to ProposedImplementation/ root"
     )
     parser.add_argument(
         "--load-cache",
@@ -643,8 +665,8 @@ def main():
     parser.add_argument(
         "--target-per-class",
         type=int,
-        default=PIPELINE_CONFIG["smote_target_per_class"],
-        help="SMOTE target samples per class"
+        default=PIPELINE_CONFIG["ctgan_target_per_class"],
+        help="CTGAN target samples per class"
     )
     parser.add_argument(
         "--log-level",
@@ -661,7 +683,7 @@ def main():
     )
 
     config_override = {
-        "smote_target_per_class": args.target_per_class,
+        "ctgan_target_per_class": args.target_per_class,
     }
 
     pipeline = DOSPreprocessingPipeline(

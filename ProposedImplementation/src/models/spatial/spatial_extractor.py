@@ -1,32 +1,60 @@
 """
-spatial_extractor.py  —  ProposedImplementation
-================================================
-Lightweight Spatial Feature Extractor using Depthwise Separable Convolutions.
+spatial_extractor.py
+====================
+Ensemble Spatial Feature Extraction Module for Ensemble-CTGAN-IDS.
 
-MOTIVATION (Phase 2 contribution):
-  The original Res-TranBiLSTM uses a full ResNet with 512 filters in the
-  final layer.  For deployment on resource-constrained IoT/fog nodes, we
-  replace it with a lightweight architecture using:
-    1. Depthwise Separable Convolutions (DSConv) — factorises each 3×3 Conv
-       into a depthwise + pointwise op, reducing parameters ~8–9× per layer.
-    2. Inverted Residual Blocks (inspired by MobileNetV2) — keeps skip
-       connections for gradient flow with far fewer parameters.
-    3. Squeeze-and-Excitation (SE) channel attention — recovers accuracy
-       lost from reduced capacity by adaptively re-weighting channels.
+Phase 2 replacement for ExistingImplementation/src/models/spatial/spatial_extractor.py.
 
-ARCHITECTURE:
-  Input:  (B, 1, 28, 28)
-  stem:   DSConv 3×3, 32ch, stride=1       → (B,  32, 28, 28)
-  stage1: InvertedResidual 32→64, stride=2  → (B,  64, 14, 14)
-  stage2: InvertedResidual 64→128, stride=2 → (B, 128,  7,  7)
-  stage3: InvertedResidual 128→128, stride=2→ (B, 128,  4,  4)
-  stage4: InvertedResidual 128→256, stride=2→ (B, 256,  2,  2)
-  GlobalAvgPool → Flatten → FC(256→128) → ReLU → Dropout
-  Output: (B, 128)   ← same as existing model, fully compatible
+PHASE 1 vs PHASE 2 SPATIAL BRANCH (New_Idea.txt lines 231-285):
+  +----------------------------------+------------------------------------------+
+  | Phase 1 (SpatialFeatureExtractor)| Phase 2 (EnsembleSpatialExtractor)       |
+  +----------------------------------+------------------------------------------+
+  | Architecture:  Single ResNet-18  | Architecture: Ensemble of two models     |
+  | Building block: ResidualBlock    | Branch 1: MobileNetV2Branch (DSConv)     |
+  | Convolution:   Standard 3x3      | Branch 2: EfficientNetB0Branch (DSConv+SE|
+  | Channel attn:  none              | Ensemble: soft feature averaging         |
+  | Params:        ~11.2M            | Params:   ~1.7M combined (~85% fewer)    |
+  | MACs:          ~122M             | MACs:     lower per branch               |
+  | Global pool:   AdaptiveMaxPool   | Global pool: AdaptiveAvgPool (per branch)|
+  +----------------------------------+------------------------------------------+
 
-PARAMETER COMPARISON (approximate):
-  Existing (ResNet):  ~11.2 M parameters in spatial branch
-  Proposed (LightCNN): ~0.9 M parameters in spatial branch  (~92% reduction)
+ENSEMBLE DESIGN (from New_Idea.txt):
+
+  Architecture (lines 236-238):
+    MobileNetV2 (~2.3M) ──┐
+                           ├── Soft Voting -> Final DoS Classification
+    EfficientNet-B0 (~5.3M)──┘
+
+  Soft Voting (lines 276-280):
+    "Use soft voting (average of softmax probabilities) -- especially
+     important for Heartbleed with only 11 samples where one model may
+     be wildly overconfident."
+
+  Implementation at feature level:
+    Each branch produces (B, 128) feature vectors.
+    Soft ensemble = elementwise average: (feat_mv2 + feat_efn) / 2
+    This gives a single (B, 128) vector that feeds downstream.
+    This is equivalent to soft voting at feature level and ensures
+    the full temporal branch + classifier pipeline is preserved unchanged.
+
+  Diversity argument (lines 246-248):
+    "MobileNetV2 captures local spatial patterns via depthwise separable
+     convolutions; EfficientNet-B0 captures channel-wise relationships
+     via SE attention blocks. These two models look at the same 28x28
+     traffic matrix differently -- exactly the diversity needed."
+
+  Parameter efficiency argument (lines 240-245):
+    "Total: ~7.6M params -- still lighter than ResNet-18 alone.
+     You are getting two models for less than the cost of one ResNet-18."
+
+28x28 ADAPTATION (New_Idea.txt lines 268-275):
+  Both branches have stride-2 stems replaced with stride-1, and early
+  downsampling stages adjusted to preserve spatial detail in the 28x28
+  input. See dsconv_block.py for per-stage adaptation details.
+
+I/O CONTRACT (identical to Phase 1 SpatialFeatureExtractor):
+  input : (B, 1, 28, 28)
+  output: (B, 128)         -- soft-averaged ensemble feature vector
 
 Author: FYP ProposedImplementation
 """
@@ -35,151 +63,38 @@ from __future__ import annotations
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+
+from .dsconv_block import MobileNetV2Branch, EfficientNetB0Branch
 
 
-# ---------------------------------------------------------------------------
-# Building blocks
-# ---------------------------------------------------------------------------
-
-class DepthwiseSeparableConv(nn.Module):
+class EnsembleSpatialExtractor(nn.Module):
     """
-    Depthwise Separable Convolution: depthwise(3×3) + pointwise(1×1).
-    Reduces parameters from C_in*C_out*k*k to C_in*k*k + C_in*C_out.
-    """
-    def __init__(
-        self,
-        in_ch: int,
-        out_ch: int,
-        stride: int = 1,
-        padding: int = 1,
-    ) -> None:
-        super().__init__()
-        self.dw = nn.Conv2d(
-            in_ch, in_ch, kernel_size=3, stride=stride,
-            padding=padding, groups=in_ch, bias=False,
-        )
-        self.pw = nn.Conv2d(in_ch, out_ch, kernel_size=1, bias=False)
-        self.bn = nn.BatchNorm2d(out_ch)
-        self.relu = nn.ReLU6(inplace=True)
+    Ensemble Spatial Feature Extractor for Phase 2 (Ensemble-CTGAN-IDS).
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.dw(x)
-        x = self.pw(x)
-        x = self.bn(x)
-        return self.relu(x)
+    Phase 2 replacement for Phase 1's SpatialFeatureExtractor (ResNet-18).
 
+    Runs MobileNetV2Branch and EfficientNetB0Branch in parallel on the same
+    28x28 input. Both branches produce (B, 128) feature vectors. Their
+    outputs are averaged (soft ensemble) to give a single (B, 128) vector,
+    maintaining full compatibility with the downstream ClassificationHead.
 
-class SqueezeExcitation(nn.Module):
-    """
-    Squeeze-and-Excitation block — channel attention with reduction ratio r.
-    Recalibrates channel responses to recover accuracy lost from fewer params.
-    """
-    def __init__(self, channels: int, reduction: int = 4) -> None:
-        super().__init__()
-        mid = max(channels // reduction, 8)
-        self.se = nn.Sequential(
-            nn.AdaptiveAvgPool2d(1),
-            nn.Flatten(),
-            nn.Linear(channels, mid),
-            nn.ReLU(inplace=True),
-            nn.Linear(mid, channels),
-            nn.Sigmoid(),
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        scale = self.se(x).view(x.size(0), x.size(1), 1, 1)
-        return x * scale
-
-
-class InvertedResidualBlock(nn.Module):
-    """
-    Lightweight inverted residual block (MobileNetV2-style) + SE attention.
-
-    Structure:
-      expand (pointwise) → DSConv → SE → project (pointwise) → skip (if same dim)
+    Architecture (New_Idea.txt lines 236-238):
+      x_img (B, 1, 28, 28)
+        |
+        |-- MobileNetV2Branch  --> feat_mv2  (B, 128)  [local spatial patterns]
+        |                                                   |
+        |-- EfficientNetB0Branch-> feat_efn  (B, 128)  [channel-wise via SE]
+                                                            |
+                                            avg(feat_mv2, feat_efn) --> (B, 128)
 
     Parameters
     ----------
-    in_ch   : input channels
-    out_ch  : output channels
-    stride  : spatial downsampling (1 or 2)
-    expand  : expansion ratio for inner dimension
-    """
-    def __init__(
-        self,
-        in_ch: int,
-        out_ch: int,
-        stride: int = 1,
-        expand: int = 4,
-    ) -> None:
-        super().__init__()
-        mid_ch = in_ch * expand
-        self.use_skip = (stride == 1 and in_ch == out_ch)
-
-        layers = []
-
-        # Expand (pointwise)
-        if expand != 1:
-            layers += [
-                nn.Conv2d(in_ch, mid_ch, 1, bias=False),
-                nn.BatchNorm2d(mid_ch),
-                nn.ReLU6(inplace=True),
-            ]
-
-        # Depthwise
-        layers += [
-            nn.Conv2d(mid_ch, mid_ch, 3, stride=stride, padding=1,
-                      groups=mid_ch, bias=False),
-            nn.BatchNorm2d(mid_ch),
-            nn.ReLU6(inplace=True),
-        ]
-
-        # SE attention
-        layers.append(SqueezeExcitation(mid_ch))
-
-        # Project (pointwise, no activation — "linear bottleneck")
-        layers += [
-            nn.Conv2d(mid_ch, out_ch, 1, bias=False),
-            nn.BatchNorm2d(out_ch),
-        ]
-
-        self.block = nn.Sequential(*layers)
-
-        # Downsample for skip when channels differ
-        if not self.use_skip and stride == 1:
-            self.skip_proj = nn.Sequential(
-                nn.Conv2d(in_ch, out_ch, 1, bias=False),
-                nn.BatchNorm2d(out_ch),
-            )
-        else:
-            self.skip_proj = None
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        out = self.block(x)
-        if self.use_skip:
-            return out + x
-        elif self.skip_proj is not None:
-            return out + self.skip_proj(x)
-        return out
-
-
-# ---------------------------------------------------------------------------
-# Full Lightweight Spatial Extractor
-# ---------------------------------------------------------------------------
-
-class LightweightSpatialExtractor(nn.Module):
-    """
-    Lightweight spatial feature extractor for ProposedImplementation.
-
-    Produces same (B, 128) output as the existing ResNet branch,
-    so the classifier head is 100% compatible.
-
-    Parameters
-    ----------
-    in_channels : int   — 1 for grayscale
-    output_dim  : int   — 128 (matches existing model)
-    dropout     : float — 0.5
+    in_channels : int
+        Input image channels (1 for grayscale). Same as Phase 1.
+    output_dim : int
+        Output feature vector dimension (128 per paper FC-1). Same as Phase 1.
+    dropout : float
+        Dropout rate applied inside each branch's FC layer (0.5 per Table 10).
     """
 
     def __init__(
@@ -191,74 +106,93 @@ class LightweightSpatialExtractor(nn.Module):
         super().__init__()
         self.output_dim = output_dim
 
-        # Stem: standard DSConv (not inverted residual for first layer)
-        self.stem = nn.Sequential(
-            DepthwiseSeparableConv(in_channels, 32, stride=1),  # (B, 32, 28, 28)
+        # -- Branch 1: MobileNetV2 (local spatial patterns, depthwise separable) --
+        # New_Idea.txt line 236: "MobileNetV2 (~2.3M)"
+        self.mobilenet = MobileNetV2Branch(
+            in_channels=in_channels,
+            output_dim=output_dim,
+            dropout=dropout,
         )
 
-        # Stages: progressive channel expansion + spatial downsampling
-        self.stage1 = InvertedResidualBlock(32,  64,  stride=2, expand=4)   # (B, 64,  14, 14)
-        self.stage2 = InvertedResidualBlock(64,  128, stride=2, expand=4)   # (B, 128,  7,  7)
-        self.stage3 = InvertedResidualBlock(128, 128, stride=2, expand=4)   # (B, 128,  4,  4)
-        self.stage4 = InvertedResidualBlock(128, 256, stride=2, expand=4)   # (B, 256,  2,  2)
-
-        # Global pooling + classifier
-        self.gap = nn.AdaptiveAvgPool2d(1)   # (B, 256, 1, 1)
-        self.flatten = nn.Flatten()          # (B, 256)
-        self.fc = nn.Linear(256, output_dim)
-        self.relu = nn.ReLU(inplace=True)
-        self.dropout = nn.Dropout(p=dropout)
-
-        self._init_weights()
+        # -- Branch 2: EfficientNet-B0 (channel-wise relationships, SE blocks) --
+        # New_Idea.txt line 238: "EfficientNet-B0 (~5.3M)"
+        self.efficientnet = EfficientNetB0Branch(
+            in_channels=in_channels,
+            output_dim=output_dim,
+            dropout=dropout,
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
+        Parallel forward pass through both branches with soft feature averaging.
+
+        Both branches see the same (B, 1, 28, 28) input independently.
+        Soft ensemble is applied at feature level: average of (B, 128) vectors.
+
         Parameters
         ----------
-        x : (B, 1, 28, 28)
+        x : torch.Tensor, shape (B, 1, 28, 28)
+            Batch of normalised 28x28 grayscale network traffic images.
 
         Returns
         -------
-        (B, 128)
+        torch.Tensor, shape (B, 128)
+            Soft-averaged ensemble spatial feature vector.
+            Same shape as Phase 1 SpatialFeatureExtractor output.
         """
-        x = self.stem(x)
-        x = self.stage1(x)
-        x = self.stage2(x)
-        x = self.stage3(x)
-        x = self.stage4(x)
-        x = self.gap(x)
-        x = self.flatten(x)
-        x = self.fc(x)
-        x = self.relu(x)
-        x = self.dropout(x)
-        return x
+        # Each branch processes the same input independently (parallel)
+        feat_mv2 = self.mobilenet(x)      # (B, 128) -- local spatial
+        feat_efn = self.efficientnet(x)   # (B, 128) -- channel-wise + SE
 
-    def _init_weights(self) -> None:
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
-            elif isinstance(m, nn.BatchNorm2d):
-                nn.init.ones_(m.weight)
-                nn.init.zeros_(m.bias)
-            elif isinstance(m, nn.Linear):
-                nn.init.xavier_uniform_(m.weight)
-                if m.bias is not None:
-                    nn.init.zeros_(m.bias)
+        # Soft ensemble: elementwise average (New_Idea.txt lines 276-280)
+        # Equivalent to soft voting on feature representations:
+        #   avg(feat_mv2, feat_efn) balances both views of the traffic image
+        ensemble_feat = (feat_mv2 + feat_efn) * 0.5   # (B, 128)
+
+        return ensemble_feat
 
     def get_output_dim(self) -> int:
+        """Returns 128 -- identical to Phase 1 SpatialFeatureExtractor."""
         return self.output_dim
 
     def count_parameters(self) -> int:
+        """Total trainable parameters across both branches."""
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
+    def count_parameters_by_branch(self) -> dict:
+        """Per-branch parameter breakdown for reporting."""
+        return {
+            "mobilenet":    sum(p.numel() for p in self.mobilenet.parameters()    if p.requires_grad),
+            "efficientnet": sum(p.numel() for p in self.efficientnet.parameters() if p.requires_grad),
+            "total":        self.count_parameters(),
+        }
+
 
 # ---------------------------------------------------------------------------
-# Quick test
+# Sanity check
 # ---------------------------------------------------------------------------
+
 if __name__ == "__main__":
-    model = LightweightSpatialExtractor()
-    x = torch.randn(4, 1, 28, 28)
+    model = EnsembleSpatialExtractor(in_channels=1, output_dim=128)
+    model.eval()
+
+    x = torch.randn(8, 1, 28, 28)
     out = model(x)
-    print(f"Input:  {x.shape}")
-    print(f"Output: {out.shape}")          # (4, 128)
-    print(f"Params: {model.count_parameters():,}")
+
+    print(f"Input:   {tuple(x.shape)}")
+    print(f"Output:  {tuple(out.shape)}")    # expect (8, 128)
+
+    branch_params = model.count_parameters_by_branch()
+    print(f"\nParameter breakdown:")
+    print(f"  MobileNetV2Branch    : {branch_params['mobilenet']:>10,}")
+    print(f"  EfficientNetB0Branch : {branch_params['efficientnet']:>10,}")
+    print(f"  Ensemble total       : {branch_params['total']:>10,}")
+
+    # Phase 1 vs Phase 2 comparison (New_Idea.txt lines 240-245)
+    phase1_params = 11_200_000   # SpatialFeatureExtractor (ResNet-18)
+    phase2_params = branch_params["total"]
+    print(f"\nPhase 1 ResNet-18 (single)        : ~{phase1_params:,}")
+    print(f"Phase 2 MobileNetV2 + EfficientB0 :  {phase2_params:,}")
+    print(f"Reduction                          :  {1 - phase2_params/phase1_params:.1%} fewer params")
+    print(f"New_Idea.txt claim valid           :  "
+          f"{'YES (combined < ResNet-18)' if phase2_params < phase1_params else 'FAIL'}")

@@ -1,0 +1,3206 @@
+[
+  {
+    "name": "spatial.mobilenet.stem.0",
+    "type": "Conv2d",
+    "macs": 225792,
+    "params": 288,
+    "input_shape": [
+      1,
+      1,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      32,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stem.1",
+    "type": "BatchNorm2d",
+    "macs": 50176,
+    "params": 64,
+    "input_shape": [
+      1,
+      32,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      32,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage1.0.block.0",
+    "type": "Conv2d",
+    "macs": 225792,
+    "params": 288,
+    "input_shape": [
+      1,
+      32,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      32,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage1.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 50176,
+    "params": 64,
+    "input_shape": [
+      1,
+      32,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      32,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage1.0.block.3",
+    "type": "Conv2d",
+    "macs": 401408,
+    "params": 512,
+    "input_shape": [
+      1,
+      32,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      16,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage1.0.block.4",
+    "type": "BatchNorm2d",
+    "macs": 25088,
+    "params": 32,
+    "input_shape": [
+      1,
+      16,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      16,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.0.block.0",
+    "type": "Conv2d",
+    "macs": 1204224,
+    "params": 1536,
+    "input_shape": [
+      1,
+      16,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      96,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 150528,
+    "params": 192,
+    "input_shape": [
+      1,
+      96,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      96,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.0.block.3",
+    "type": "Conv2d",
+    "macs": 677376,
+    "params": 864,
+    "input_shape": [
+      1,
+      96,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      96,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.0.block.4",
+    "type": "BatchNorm2d",
+    "macs": 150528,
+    "params": 192,
+    "input_shape": [
+      1,
+      96,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      96,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.0.block.6",
+    "type": "Conv2d",
+    "macs": 1806336,
+    "params": 2304,
+    "input_shape": [
+      1,
+      96,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      24,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.0.block.7",
+    "type": "BatchNorm2d",
+    "macs": 37632,
+    "params": 48,
+    "input_shape": [
+      1,
+      24,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      24,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.1.block.0",
+    "type": "Conv2d",
+    "macs": 2709504,
+    "params": 3456,
+    "input_shape": [
+      1,
+      24,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.1.block.1",
+    "type": "BatchNorm2d",
+    "macs": 225792,
+    "params": 288,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.1.block.3",
+    "type": "Conv2d",
+    "macs": 1016064,
+    "params": 1296,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.1.block.4",
+    "type": "BatchNorm2d",
+    "macs": 225792,
+    "params": 288,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.1.block.6",
+    "type": "Conv2d",
+    "macs": 2709504,
+    "params": 3456,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      24,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage2.1.block.7",
+    "type": "BatchNorm2d",
+    "macs": 37632,
+    "params": 48,
+    "input_shape": [
+      1,
+      24,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      24,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.0.block.0",
+    "type": "Conv2d",
+    "macs": 2709504,
+    "params": 3456,
+    "input_shape": [
+      1,
+      24,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 225792,
+    "params": 288,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.0.block.3",
+    "type": "Conv2d",
+    "macs": 254016,
+    "params": 1296,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.0.block.4",
+    "type": "BatchNorm2d",
+    "macs": 56448,
+    "params": 288,
+    "input_shape": [
+      1,
+      144,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      144,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.0.block.6",
+    "type": "Conv2d",
+    "macs": 903168,
+    "params": 4608,
+    "input_shape": [
+      1,
+      144,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      32,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.0.block.7",
+    "type": "BatchNorm2d",
+    "macs": 12544,
+    "params": 64,
+    "input_shape": [
+      1,
+      32,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      32,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.1.block.0",
+    "type": "Conv2d",
+    "macs": 1204224,
+    "params": 6144,
+    "input_shape": [
+      1,
+      32,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      192,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.1.block.1",
+    "type": "BatchNorm2d",
+    "macs": 75264,
+    "params": 384,
+    "input_shape": [
+      1,
+      192,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      192,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.1.block.3",
+    "type": "Conv2d",
+    "macs": 338688,
+    "params": 1728,
+    "input_shape": [
+      1,
+      192,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      192,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.1.block.4",
+    "type": "BatchNorm2d",
+    "macs": 75264,
+    "params": 384,
+    "input_shape": [
+      1,
+      192,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      192,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.1.block.6",
+    "type": "Conv2d",
+    "macs": 1204224,
+    "params": 6144,
+    "input_shape": [
+      1,
+      192,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      32,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.1.block.7",
+    "type": "BatchNorm2d",
+    "macs": 12544,
+    "params": 64,
+    "input_shape": [
+      1,
+      32,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      32,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.2.block.0",
+    "type": "Conv2d",
+    "macs": 1204224,
+    "params": 6144,
+    "input_shape": [
+      1,
+      32,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      192,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.2.block.1",
+    "type": "BatchNorm2d",
+    "macs": 75264,
+    "params": 384,
+    "input_shape": [
+      1,
+      192,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      192,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.2.block.3",
+    "type": "Conv2d",
+    "macs": 338688,
+    "params": 1728,
+    "input_shape": [
+      1,
+      192,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      192,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.2.block.4",
+    "type": "BatchNorm2d",
+    "macs": 75264,
+    "params": 384,
+    "input_shape": [
+      1,
+      192,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      192,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.2.block.6",
+    "type": "Conv2d",
+    "macs": 1204224,
+    "params": 6144,
+    "input_shape": [
+      1,
+      192,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      32,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage3.2.block.7",
+    "type": "BatchNorm2d",
+    "macs": 12544,
+    "params": 64,
+    "input_shape": [
+      1,
+      32,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      32,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.0.block.0",
+    "type": "Conv2d",
+    "macs": 1204224,
+    "params": 6144,
+    "input_shape": [
+      1,
+      32,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      192,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 75264,
+    "params": 384,
+    "input_shape": [
+      1,
+      192,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      192,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.0.block.3",
+    "type": "Conv2d",
+    "macs": 84672,
+    "params": 1728,
+    "input_shape": [
+      1,
+      192,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      192,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.0.block.4",
+    "type": "BatchNorm2d",
+    "macs": 18816,
+    "params": 384,
+    "input_shape": [
+      1,
+      192,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      192,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.0.block.6",
+    "type": "Conv2d",
+    "macs": 602112,
+    "params": 12288,
+    "input_shape": [
+      1,
+      192,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      64,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.0.block.7",
+    "type": "BatchNorm2d",
+    "macs": 6272,
+    "params": 128,
+    "input_shape": [
+      1,
+      64,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      64,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.1.block.0",
+    "type": "Conv2d",
+    "macs": 1204224,
+    "params": 24576,
+    "input_shape": [
+      1,
+      64,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      384,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.1.block.1",
+    "type": "BatchNorm2d",
+    "macs": 37632,
+    "params": 768,
+    "input_shape": [
+      1,
+      384,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      384,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.1.block.3",
+    "type": "Conv2d",
+    "macs": 169344,
+    "params": 3456,
+    "input_shape": [
+      1,
+      384,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      384,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.1.block.4",
+    "type": "BatchNorm2d",
+    "macs": 37632,
+    "params": 768,
+    "input_shape": [
+      1,
+      384,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      384,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.1.block.6",
+    "type": "Conv2d",
+    "macs": 1204224,
+    "params": 24576,
+    "input_shape": [
+      1,
+      384,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      64,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage4.1.block.7",
+    "type": "BatchNorm2d",
+    "macs": 6272,
+    "params": 128,
+    "input_shape": [
+      1,
+      64,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      64,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.0.block.0",
+    "type": "Conv2d",
+    "macs": 1204224,
+    "params": 24576,
+    "input_shape": [
+      1,
+      64,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      384,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 37632,
+    "params": 768,
+    "input_shape": [
+      1,
+      384,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      384,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.0.block.3",
+    "type": "Conv2d",
+    "macs": 55296,
+    "params": 3456,
+    "input_shape": [
+      1,
+      384,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      384,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.0.block.4",
+    "type": "BatchNorm2d",
+    "macs": 12288,
+    "params": 768,
+    "input_shape": [
+      1,
+      384,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      384,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.0.block.6",
+    "type": "Conv2d",
+    "macs": 589824,
+    "params": 36864,
+    "input_shape": [
+      1,
+      384,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      96,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.0.block.7",
+    "type": "BatchNorm2d",
+    "macs": 3072,
+    "params": 192,
+    "input_shape": [
+      1,
+      96,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      96,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.1.block.0",
+    "type": "Conv2d",
+    "macs": 884736,
+    "params": 55296,
+    "input_shape": [
+      1,
+      96,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      576,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.1.block.1",
+    "type": "BatchNorm2d",
+    "macs": 18432,
+    "params": 1152,
+    "input_shape": [
+      1,
+      576,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      576,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.1.block.3",
+    "type": "Conv2d",
+    "macs": 82944,
+    "params": 5184,
+    "input_shape": [
+      1,
+      576,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      576,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.1.block.4",
+    "type": "BatchNorm2d",
+    "macs": 18432,
+    "params": 1152,
+    "input_shape": [
+      1,
+      576,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      576,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.1.block.6",
+    "type": "Conv2d",
+    "macs": 884736,
+    "params": 55296,
+    "input_shape": [
+      1,
+      576,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      96,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage5.1.block.7",
+    "type": "BatchNorm2d",
+    "macs": 3072,
+    "params": 192,
+    "input_shape": [
+      1,
+      96,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      96,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage6.0.block.0",
+    "type": "Conv2d",
+    "macs": 884736,
+    "params": 55296,
+    "input_shape": [
+      1,
+      96,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      576,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage6.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 18432,
+    "params": 1152,
+    "input_shape": [
+      1,
+      576,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      576,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage6.0.block.3",
+    "type": "Conv2d",
+    "macs": 82944,
+    "params": 5184,
+    "input_shape": [
+      1,
+      576,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      576,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage6.0.block.4",
+    "type": "BatchNorm2d",
+    "macs": 18432,
+    "params": 1152,
+    "input_shape": [
+      1,
+      576,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      576,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage6.0.block.6",
+    "type": "Conv2d",
+    "macs": 1474560,
+    "params": 92160,
+    "input_shape": [
+      1,
+      576,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      160,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.stage6.0.block.7",
+    "type": "BatchNorm2d",
+    "macs": 5120,
+    "params": 320,
+    "input_shape": [
+      1,
+      160,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      160,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.head_conv.0",
+    "type": "Conv2d",
+    "macs": 655360,
+    "params": 40960,
+    "input_shape": [
+      1,
+      160,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.head_conv.1",
+    "type": "BatchNorm2d",
+    "macs": 8192,
+    "params": 512,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      256,
+      4,
+      4
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.global_pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 256,
+    "params": 0,
+    "input_shape": [
+      1,
+      256,
+      4,
+      4
+    ],
+    "output_shape": [
+      1,
+      256,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.mobilenet.fc.1",
+    "type": "Linear",
+    "macs": 32896,
+    "params": 32896,
+    "input_shape": [
+      1,
+      256
+    ],
+    "output_shape": [
+      1,
+      128
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stem.0",
+    "type": "Conv2d",
+    "macs": 225792,
+    "params": 288,
+    "input_shape": [
+      1,
+      1,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      32,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stem.1",
+    "type": "BatchNorm2d",
+    "macs": 50176,
+    "params": 64,
+    "input_shape": [
+      1,
+      32,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      32,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage1.0.block.0",
+    "type": "Conv2d",
+    "macs": 225792,
+    "params": 288,
+    "input_shape": [
+      1,
+      32,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      32,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage1.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 50176,
+    "params": 64,
+    "input_shape": [
+      1,
+      32,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      32,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage1.0.block.3.pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 32,
+    "params": 0,
+    "input_shape": [
+      1,
+      32,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      32,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage1.0.block.3.fc1",
+    "type": "Linear",
+    "macs": 264,
+    "params": 264,
+    "input_shape": [
+      1,
+      32
+    ],
+    "output_shape": [
+      1,
+      8
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage1.0.block.3.fc2",
+    "type": "Linear",
+    "macs": 288,
+    "params": 288,
+    "input_shape": [
+      1,
+      8
+    ],
+    "output_shape": [
+      1,
+      32
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage1.0.block.4",
+    "type": "Conv2d",
+    "macs": 401408,
+    "params": 512,
+    "input_shape": [
+      1,
+      32,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      16,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage1.0.block.5",
+    "type": "BatchNorm2d",
+    "macs": 25088,
+    "params": 32,
+    "input_shape": [
+      1,
+      16,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      16,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.0.block.0",
+    "type": "Conv2d",
+    "macs": 1204224,
+    "params": 1536,
+    "input_shape": [
+      1,
+      16,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      96,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 150528,
+    "params": 192,
+    "input_shape": [
+      1,
+      96,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      96,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.0.block.3",
+    "type": "Conv2d",
+    "macs": 677376,
+    "params": 864,
+    "input_shape": [
+      1,
+      96,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      96,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.0.block.4",
+    "type": "BatchNorm2d",
+    "macs": 150528,
+    "params": 192,
+    "input_shape": [
+      1,
+      96,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      96,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.0.block.6.pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 96,
+    "params": 0,
+    "input_shape": [
+      1,
+      96,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      96,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.0.block.6.fc1",
+    "type": "Linear",
+    "macs": 2328,
+    "params": 2328,
+    "input_shape": [
+      1,
+      96
+    ],
+    "output_shape": [
+      1,
+      24
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.0.block.6.fc2",
+    "type": "Linear",
+    "macs": 2400,
+    "params": 2400,
+    "input_shape": [
+      1,
+      24
+    ],
+    "output_shape": [
+      1,
+      96
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.0.block.7",
+    "type": "Conv2d",
+    "macs": 1806336,
+    "params": 2304,
+    "input_shape": [
+      1,
+      96,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      24,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.0.block.8",
+    "type": "BatchNorm2d",
+    "macs": 37632,
+    "params": 48,
+    "input_shape": [
+      1,
+      24,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      24,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.1.block.0",
+    "type": "Conv2d",
+    "macs": 2709504,
+    "params": 3456,
+    "input_shape": [
+      1,
+      24,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.1.block.1",
+    "type": "BatchNorm2d",
+    "macs": 225792,
+    "params": 288,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.1.block.3",
+    "type": "Conv2d",
+    "macs": 1016064,
+    "params": 1296,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.1.block.4",
+    "type": "BatchNorm2d",
+    "macs": 225792,
+    "params": 288,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.1.block.6.pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 144,
+    "params": 0,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.1.block.6.fc1",
+    "type": "Linear",
+    "macs": 5220,
+    "params": 5220,
+    "input_shape": [
+      1,
+      144
+    ],
+    "output_shape": [
+      1,
+      36
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.1.block.6.fc2",
+    "type": "Linear",
+    "macs": 5328,
+    "params": 5328,
+    "input_shape": [
+      1,
+      36
+    ],
+    "output_shape": [
+      1,
+      144
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.1.block.7",
+    "type": "Conv2d",
+    "macs": 2709504,
+    "params": 3456,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      24,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage2.1.block.8",
+    "type": "BatchNorm2d",
+    "macs": 37632,
+    "params": 48,
+    "input_shape": [
+      1,
+      24,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      24,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.0.block.0",
+    "type": "Conv2d",
+    "macs": 2709504,
+    "params": 3456,
+    "input_shape": [
+      1,
+      24,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 225792,
+    "params": 288,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      28,
+      28
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.0.block.3",
+    "type": "Conv2d",
+    "macs": 254016,
+    "params": 1296,
+    "input_shape": [
+      1,
+      144,
+      28,
+      28
+    ],
+    "output_shape": [
+      1,
+      144,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.0.block.4",
+    "type": "BatchNorm2d",
+    "macs": 56448,
+    "params": 288,
+    "input_shape": [
+      1,
+      144,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      144,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.0.block.6.pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 144,
+    "params": 0,
+    "input_shape": [
+      1,
+      144,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      144,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.0.block.6.fc1",
+    "type": "Linear",
+    "macs": 5220,
+    "params": 5220,
+    "input_shape": [
+      1,
+      144
+    ],
+    "output_shape": [
+      1,
+      36
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.0.block.6.fc2",
+    "type": "Linear",
+    "macs": 5328,
+    "params": 5328,
+    "input_shape": [
+      1,
+      36
+    ],
+    "output_shape": [
+      1,
+      144
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.0.block.7",
+    "type": "Conv2d",
+    "macs": 1128960,
+    "params": 5760,
+    "input_shape": [
+      1,
+      144,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      40,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.0.block.8",
+    "type": "BatchNorm2d",
+    "macs": 15680,
+    "params": 80,
+    "input_shape": [
+      1,
+      40,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      40,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.1.block.0",
+    "type": "Conv2d",
+    "macs": 1881600,
+    "params": 9600,
+    "input_shape": [
+      1,
+      40,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      240,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.1.block.1",
+    "type": "BatchNorm2d",
+    "macs": 94080,
+    "params": 480,
+    "input_shape": [
+      1,
+      240,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      240,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.1.block.3",
+    "type": "Conv2d",
+    "macs": 423360,
+    "params": 2160,
+    "input_shape": [
+      1,
+      240,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      240,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.1.block.4",
+    "type": "BatchNorm2d",
+    "macs": 94080,
+    "params": 480,
+    "input_shape": [
+      1,
+      240,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      240,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.1.block.6.pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 240,
+    "params": 0,
+    "input_shape": [
+      1,
+      240,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      240,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.1.block.6.fc1",
+    "type": "Linear",
+    "macs": 14460,
+    "params": 14460,
+    "input_shape": [
+      1,
+      240
+    ],
+    "output_shape": [
+      1,
+      60
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.1.block.6.fc2",
+    "type": "Linear",
+    "macs": 14640,
+    "params": 14640,
+    "input_shape": [
+      1,
+      60
+    ],
+    "output_shape": [
+      1,
+      240
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.1.block.7",
+    "type": "Conv2d",
+    "macs": 1881600,
+    "params": 9600,
+    "input_shape": [
+      1,
+      240,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      40,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage3.1.block.8",
+    "type": "BatchNorm2d",
+    "macs": 15680,
+    "params": 80,
+    "input_shape": [
+      1,
+      40,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      40,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.0.block.0",
+    "type": "Conv2d",
+    "macs": 1881600,
+    "params": 9600,
+    "input_shape": [
+      1,
+      40,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      240,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 94080,
+    "params": 480,
+    "input_shape": [
+      1,
+      240,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      240,
+      14,
+      14
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.0.block.3",
+    "type": "Conv2d",
+    "macs": 105840,
+    "params": 2160,
+    "input_shape": [
+      1,
+      240,
+      14,
+      14
+    ],
+    "output_shape": [
+      1,
+      240,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.0.block.4",
+    "type": "BatchNorm2d",
+    "macs": 23520,
+    "params": 480,
+    "input_shape": [
+      1,
+      240,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      240,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.0.block.6.pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 240,
+    "params": 0,
+    "input_shape": [
+      1,
+      240,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      240,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.0.block.6.fc1",
+    "type": "Linear",
+    "macs": 14460,
+    "params": 14460,
+    "input_shape": [
+      1,
+      240
+    ],
+    "output_shape": [
+      1,
+      60
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.0.block.6.fc2",
+    "type": "Linear",
+    "macs": 14640,
+    "params": 14640,
+    "input_shape": [
+      1,
+      60
+    ],
+    "output_shape": [
+      1,
+      240
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.0.block.7",
+    "type": "Conv2d",
+    "macs": 940800,
+    "params": 19200,
+    "input_shape": [
+      1,
+      240,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      80,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.0.block.8",
+    "type": "BatchNorm2d",
+    "macs": 7840,
+    "params": 160,
+    "input_shape": [
+      1,
+      80,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      80,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.1.block.0",
+    "type": "Conv2d",
+    "macs": 1881600,
+    "params": 38400,
+    "input_shape": [
+      1,
+      80,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      480,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.1.block.1",
+    "type": "BatchNorm2d",
+    "macs": 47040,
+    "params": 960,
+    "input_shape": [
+      1,
+      480,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      480,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.1.block.3",
+    "type": "Conv2d",
+    "macs": 211680,
+    "params": 4320,
+    "input_shape": [
+      1,
+      480,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      480,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.1.block.4",
+    "type": "BatchNorm2d",
+    "macs": 47040,
+    "params": 960,
+    "input_shape": [
+      1,
+      480,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      480,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.1.block.6.pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 480,
+    "params": 0,
+    "input_shape": [
+      1,
+      480,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      480,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.1.block.6.fc1",
+    "type": "Linear",
+    "macs": 57720,
+    "params": 57720,
+    "input_shape": [
+      1,
+      480
+    ],
+    "output_shape": [
+      1,
+      120
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.1.block.6.fc2",
+    "type": "Linear",
+    "macs": 58080,
+    "params": 58080,
+    "input_shape": [
+      1,
+      120
+    ],
+    "output_shape": [
+      1,
+      480
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.1.block.7",
+    "type": "Conv2d",
+    "macs": 1881600,
+    "params": 38400,
+    "input_shape": [
+      1,
+      480,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      80,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage4.1.block.8",
+    "type": "BatchNorm2d",
+    "macs": 7840,
+    "params": 160,
+    "input_shape": [
+      1,
+      80,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      80,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.0.block.0",
+    "type": "Conv2d",
+    "macs": 1881600,
+    "params": 38400,
+    "input_shape": [
+      1,
+      80,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      480,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 47040,
+    "params": 960,
+    "input_shape": [
+      1,
+      480,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      480,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.0.block.3",
+    "type": "Conv2d",
+    "macs": 211680,
+    "params": 4320,
+    "input_shape": [
+      1,
+      480,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      480,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.0.block.4",
+    "type": "BatchNorm2d",
+    "macs": 47040,
+    "params": 960,
+    "input_shape": [
+      1,
+      480,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      480,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.0.block.6.pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 480,
+    "params": 0,
+    "input_shape": [
+      1,
+      480,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      480,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.0.block.6.fc1",
+    "type": "Linear",
+    "macs": 57720,
+    "params": 57720,
+    "input_shape": [
+      1,
+      480
+    ],
+    "output_shape": [
+      1,
+      120
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.0.block.6.fc2",
+    "type": "Linear",
+    "macs": 58080,
+    "params": 58080,
+    "input_shape": [
+      1,
+      120
+    ],
+    "output_shape": [
+      1,
+      480
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.0.block.7",
+    "type": "Conv2d",
+    "macs": 2634240,
+    "params": 53760,
+    "input_shape": [
+      1,
+      480,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      112,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.0.block.8",
+    "type": "BatchNorm2d",
+    "macs": 10976,
+    "params": 224,
+    "input_shape": [
+      1,
+      112,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      112,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.1.block.0",
+    "type": "Conv2d",
+    "macs": 3687936,
+    "params": 75264,
+    "input_shape": [
+      1,
+      112,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      672,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.1.block.1",
+    "type": "BatchNorm2d",
+    "macs": 65856,
+    "params": 1344,
+    "input_shape": [
+      1,
+      672,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      672,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.1.block.3",
+    "type": "Conv2d",
+    "macs": 296352,
+    "params": 6048,
+    "input_shape": [
+      1,
+      672,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      672,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.1.block.4",
+    "type": "BatchNorm2d",
+    "macs": 65856,
+    "params": 1344,
+    "input_shape": [
+      1,
+      672,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      672,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.1.block.6.pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 672,
+    "params": 0,
+    "input_shape": [
+      1,
+      672,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      672,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.1.block.6.fc1",
+    "type": "Linear",
+    "macs": 113064,
+    "params": 113064,
+    "input_shape": [
+      1,
+      672
+    ],
+    "output_shape": [
+      1,
+      168
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.1.block.6.fc2",
+    "type": "Linear",
+    "macs": 113568,
+    "params": 113568,
+    "input_shape": [
+      1,
+      168
+    ],
+    "output_shape": [
+      1,
+      672
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.1.block.7",
+    "type": "Conv2d",
+    "macs": 3687936,
+    "params": 75264,
+    "input_shape": [
+      1,
+      672,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      112,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage5.1.block.8",
+    "type": "BatchNorm2d",
+    "macs": 10976,
+    "params": 224,
+    "input_shape": [
+      1,
+      112,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      112,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.0.block.0",
+    "type": "Conv2d",
+    "macs": 3687936,
+    "params": 75264,
+    "input_shape": [
+      1,
+      112,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      672,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.0.block.1",
+    "type": "BatchNorm2d",
+    "macs": 65856,
+    "params": 1344,
+    "input_shape": [
+      1,
+      672,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      672,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.0.block.3",
+    "type": "Conv2d",
+    "macs": 296352,
+    "params": 6048,
+    "input_shape": [
+      1,
+      672,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      672,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.0.block.4",
+    "type": "BatchNorm2d",
+    "macs": 65856,
+    "params": 1344,
+    "input_shape": [
+      1,
+      672,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      672,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.0.block.6.pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 672,
+    "params": 0,
+    "input_shape": [
+      1,
+      672,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      672,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.0.block.6.fc1",
+    "type": "Linear",
+    "macs": 113064,
+    "params": 113064,
+    "input_shape": [
+      1,
+      672
+    ],
+    "output_shape": [
+      1,
+      168
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.0.block.6.fc2",
+    "type": "Linear",
+    "macs": 113568,
+    "params": 113568,
+    "input_shape": [
+      1,
+      168
+    ],
+    "output_shape": [
+      1,
+      672
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.0.block.7",
+    "type": "Conv2d",
+    "macs": 6322176,
+    "params": 129024,
+    "input_shape": [
+      1,
+      672,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      192,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.0.block.8",
+    "type": "BatchNorm2d",
+    "macs": 18816,
+    "params": 384,
+    "input_shape": [
+      1,
+      192,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      192,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.1.block.0",
+    "type": "Conv2d",
+    "macs": 10838016,
+    "params": 221184,
+    "input_shape": [
+      1,
+      192,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      1152,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.1.block.1",
+    "type": "BatchNorm2d",
+    "macs": 112896,
+    "params": 2304,
+    "input_shape": [
+      1,
+      1152,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      1152,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.1.block.3",
+    "type": "Conv2d",
+    "macs": 508032,
+    "params": 10368,
+    "input_shape": [
+      1,
+      1152,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      1152,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.1.block.4",
+    "type": "BatchNorm2d",
+    "macs": 112896,
+    "params": 2304,
+    "input_shape": [
+      1,
+      1152,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      1152,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.1.block.6.pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 1152,
+    "params": 0,
+    "input_shape": [
+      1,
+      1152,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      1152,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.1.block.6.fc1",
+    "type": "Linear",
+    "macs": 332064,
+    "params": 332064,
+    "input_shape": [
+      1,
+      1152
+    ],
+    "output_shape": [
+      1,
+      288
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.1.block.6.fc2",
+    "type": "Linear",
+    "macs": 332928,
+    "params": 332928,
+    "input_shape": [
+      1,
+      288
+    ],
+    "output_shape": [
+      1,
+      1152
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.1.block.7",
+    "type": "Conv2d",
+    "macs": 10838016,
+    "params": 221184,
+    "input_shape": [
+      1,
+      1152,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      192,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.stage6.1.block.8",
+    "type": "BatchNorm2d",
+    "macs": 18816,
+    "params": 384,
+    "input_shape": [
+      1,
+      192,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      192,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.head_conv.0",
+    "type": "Conv2d",
+    "macs": 2408448,
+    "params": 49152,
+    "input_shape": [
+      1,
+      192,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      256,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.head_conv.1",
+    "type": "BatchNorm2d",
+    "macs": 25088,
+    "params": 512,
+    "input_shape": [
+      1,
+      256,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      256,
+      7,
+      7
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.global_pool",
+    "type": "AdaptiveAvgPool2d",
+    "macs": 256,
+    "params": 0,
+    "input_shape": [
+      1,
+      256,
+      7,
+      7
+    ],
+    "output_shape": [
+      1,
+      256,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "spatial.efficientnet.fc.1",
+    "type": "Linear",
+    "macs": 32896,
+    "params": 32896,
+    "input_shape": [
+      1,
+      256
+    ],
+    "output_shape": [
+      1,
+      128
+    ]
+  },
+  {
+    "name": "temporal.mlp_encoder.fc2",
+    "type": "Linear",
+    "macs": 2048,
+    "params": 32,
+    "input_shape": [
+      1,
+      64,
+      1
+    ],
+    "output_shape": [
+      1,
+      64,
+      16
+    ]
+  },
+  {
+    "name": "temporal.mlp_encoder.fc3",
+    "type": "Linear",
+    "macs": 34816,
+    "params": 544,
+    "input_shape": [
+      1,
+      64,
+      16
+    ],
+    "output_shape": [
+      1,
+      64,
+      32
+    ]
+  },
+  {
+    "name": "temporal.linear_attn.q_proj",
+    "type": "Linear",
+    "macs": 65536,
+    "params": 1024,
+    "input_shape": [
+      1,
+      64,
+      32
+    ],
+    "output_shape": [
+      1,
+      64,
+      32
+    ]
+  },
+  {
+    "name": "temporal.linear_attn.k_proj",
+    "type": "Linear",
+    "macs": 65536,
+    "params": 1024,
+    "input_shape": [
+      1,
+      64,
+      32
+    ],
+    "output_shape": [
+      1,
+      64,
+      32
+    ]
+  },
+  {
+    "name": "temporal.linear_attn.v_proj",
+    "type": "Linear",
+    "macs": 65536,
+    "params": 1024,
+    "input_shape": [
+      1,
+      64,
+      32
+    ],
+    "output_shape": [
+      1,
+      64,
+      32
+    ]
+  },
+  {
+    "name": "temporal.linear_attn.out_proj",
+    "type": "Linear",
+    "macs": 65536,
+    "params": 1024,
+    "input_shape": [
+      1,
+      64,
+      32
+    ],
+    "output_shape": [
+      1,
+      64,
+      32
+    ]
+  },
+  {
+    "name": "temporal.linear_attn.ff.0",
+    "type": "Linear",
+    "macs": 135168,
+    "params": 2112,
+    "input_shape": [
+      1,
+      64,
+      32
+    ],
+    "output_shape": [
+      1,
+      64,
+      64
+    ]
+  },
+  {
+    "name": "temporal.linear_attn.ff.3",
+    "type": "Linear",
+    "macs": 133120,
+    "params": 2080,
+    "input_shape": [
+      1,
+      64,
+      64
+    ],
+    "output_shape": [
+      1,
+      64,
+      32
+    ]
+  },
+  {
+    "name": "temporal.bigru.bigru",
+    "type": "GRU",
+    "macs": 2367488,
+    "params": 37632,
+    "input_shape": [
+      1,
+      64,
+      32
+    ],
+    "output_shape": [
+      1,
+      64,
+      128
+    ]
+  },
+  {
+    "name": "classifier.fc4",
+    "type": "Linear",
+    "macs": 32896,
+    "params": 32896,
+    "input_shape": [
+      1,
+      256
+    ],
+    "output_shape": [
+      1,
+      128
+    ]
+  },
+  {
+    "name": "classifier.fc5",
+    "type": "Linear",
+    "macs": 8256,
+    "params": 8256,
+    "input_shape": [
+      1,
+      128
+    ],
+    "output_shape": [
+      1,
+      64
+    ]
+  },
+  {
+    "name": "classifier.fc6",
+    "type": "Linear",
+    "macs": 390,
+    "params": 390,
+    "input_shape": [
+      1,
+      64
+    ],
+    "output_shape": [
+      1,
+      6
+    ]
+  }
+]

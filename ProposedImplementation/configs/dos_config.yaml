@@ -1,0 +1,115 @@
+# ============================================================
+# dos_config.yaml
+# Ensemble-Res-TranBiLSTM (Phase 2) — CIC-IDS2017 DoS subset
+# Paper: Wang et al., 2023 — Proposed improvement
+#
+# FYP NOTE: Phase 2 replaces ResNet-18 spatial branch with a
+# MobileNetV2 + EfficientNet-B0 soft ensemble, and replaces
+# SMOTE-ENN with CTGAN augmentation.
+# Twinned to ExistingImplementation/configs/dos_config.yaml:
+#   - Same section names, same key names, same structure
+#   - Same batch/LR/dropout for fair comparison
+#   - 6 classes (BENIGN + 4 DoS types + Heartbleed; include_heartbleed
+#     must be set True in pipeline if Heartbleed is to be used)
+# ============================================================
+
+experiment:
+  name:        "ensemble_res_tranbilstm_dos"
+  description: "CIC-IDS2017 DoS subset — MobileNetV2+EfficientNetB0 ensemble + CTGAN"
+  seed:        42
+
+# ----------------------------------------------------------
+# Dataset
+# ----------------------------------------------------------
+data:
+  dataset:       "CIC-IDS2017"
+  csv_path:      "data/raw/Wednesday-workingHours.csv"
+  processed_dir: "data/processed"
+  augmented_dir: "data/augmented"
+  n_features:    64          # After feature selection (paper Section 4.1)
+  spatial_small: 8           # 8×8 intermediate grid
+  spatial_large: 28          # 28×28 bicubic upsampled (MNIST size)
+  train_ratio:   0.80
+  val_ratio:     0.10
+  test_ratio:    0.10
+  num_classes:   6           # BENIGN + 4 DoS types + Heartbleed
+  class_names:
+    - "BENIGN"
+    - "DoS_slowloris"
+    - "DoS_Slowhttptest"
+    - "DoS_Hulk"
+    - "DoS_GoldenEye"
+    - "Heartbleed"
+
+# ----------------------------------------------------------
+# CTGAN (Phase 2 replacement for SMOTE-ENN from Phase 1)
+# CTGAN learns the joint feature distribution per class via
+# Generator/Discriminator training — produces diverse, realistic
+# synthetic minority samples vs SMOTE's linear interpolation.
+# Kept at 15K/class to match Phase 1 for fair comparison.
+# ----------------------------------------------------------
+ctgan:
+  target_per_class: 15000    # 15K × 6 classes = 90K total (RTX 2050 safe)
+  epochs:           50       # CTGAN training epochs per minority class
+  batch_size:       500      # Must be divisible by pac (default 10)
+
+# ----------------------------------------------------------
+# Spatial Feature Extraction
+# MobileNetV2 + EfficientNet-B0 ensemble (soft feature averaging)
+# Both branches adapted for 28×28 input (stride-1 stem, adjusted pools)
+# ----------------------------------------------------------
+spatial:
+  backbone_a:  "mobilenet_v2"    # Local spatial patterns via DSConv
+  backbone_b:  "efficientnet_b0" # Channel-wise relationships via SE blocks
+  pretrained:  false             # Train from scratch on 28×28 traffic images
+  in_channels: 1                 # Grayscale
+  output_dim:  128               # Each branch outputs 128-d; soft avg → 128-d
+  dropout:     0.5               # Paper Table 10
+
+# ----------------------------------------------------------
+# Temporal Feature Extraction — TranBiLSTM (Paper Tables 7-8)
+# Same hyperparameters as Phase 1 for fair comparison
+# ----------------------------------------------------------
+temporal:
+  seq_len:       64
+  mlp_input_dim: 1
+  mlp_hidden_dim: 16             # FC-2 hidden (Table 7)
+  d_model:       32              # FC-3 / Transformer dim (Table 8)
+  n_heads:       4               # Attention heads (Table 8)
+  ff_hidden:     64              # FeedForward hidden size (Table 8)
+  bilstm_hidden: 64              # GRU hidden per direction (Table 8)
+  dropout:       0.5
+
+# ----------------------------------------------------------
+# Classification Head (Paper Table 9)
+# ----------------------------------------------------------
+classification:
+  input_dim:   256               # Concat(spatial=128, temporal=128)
+  num_classes: 6
+  dropout:     0.5
+
+# ----------------------------------------------------------
+# Training (Paper Table 10 + Section 4.2)
+# batch_size: 256 → 128 (RTX 2050 4GB VRAM constraint)
+# max_epochs:  30 → 20  (model converges early; no FLOPs impact)
+# ----------------------------------------------------------
+training:
+  batch_size:    128             # 256 in paper, reduced for RTX 2050 4GB VRAM
+  learning_rate: 0.0001          # Paper Table 10 (Adam)
+  optimizer:     "adam"
+  dropout:       0.5             # Paper Table 10
+  max_epochs:    20              # Reduced from 30; early stopping handles the rest
+  patience:      10              # Early stopping patience
+  grad_clip:     1.0
+  num_workers:   0               # 0 = no multiprocessing (safe on Windows)
+  device:        "cuda"
+
+# ----------------------------------------------------------
+# Paths  (identical structure to Phase 1)
+# ----------------------------------------------------------
+paths:
+  checkpoint_dir:  "results/checkpoints"
+  metrics_dir:     "results/metrics"
+  plots_dir:       "results/plots"
+  log_dir:         "logs"
+  tensorboard_dir: "logs/tensorboard"

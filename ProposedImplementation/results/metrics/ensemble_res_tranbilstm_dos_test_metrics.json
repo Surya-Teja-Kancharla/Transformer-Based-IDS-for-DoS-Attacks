@@ -1,0 +1,62 @@
+{
+  "accuracy": 0.9915039830421553,
+  "precision": 0.9596919717847279,
+  "recall": 0.9920468875869106,
+  "f1": 0.9754151414088182,
+  "per_class": {
+    "BENIGN": {
+      "precision": 0.9988385598141696,
+      "recall": 0.9891879457096848,
+      "f1-score": 0.9939898289412853,
+      "support": 39123.0
+    },
+    "DoS_slowloris": {
+      "precision": 0.95,
+      "recall": 0.9888475836431226,
+      "f1-score": 0.9690346083788707,
+      "support": 538.0
+    },
+    "DoS_Slowhttptest": {
+      "precision": 0.9281867145421903,
+      "recall": 0.988527724665392,
+      "f1-score": 0.9574074074074074,
+      "support": 523.0
+    },
+    "DoS_Hulk": {
+      "precision": 0.9818741450068399,
+      "recall": 0.9965866358113972,
+      "f1-score": 0.9891756869275604,
+      "support": 17285.0
+    },
+    "DoS_GoldenEye": {
+      "precision": 0.9395604395604396,
+      "recall": 0.9970845481049563,
+      "f1-score": 0.9674681753889675,
+      "support": 1029.0
+    },
+    "Heartbleed": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 0.0
+    },
+    "micro avg": {
+      "precision": 0.9915039830421553,
+      "recall": 0.9915039830421553,
+      "f1-score": 0.9915039830421553,
+      "support": 58498.0
+    },
+    "macro avg": {
+      "precision": 0.7997433098206065,
+      "recall": 0.8267057396557589,
+      "f1-score": 0.8128459511740153,
+      "support": 58498.0
+    },
+    "weighted avg": {
+      "precision": 0.991702364458037,
+      "recall": 0.9915039830421553,
+      "f1-score": 0.9915442454796735,
+      "support": 58498.0
+    }
+  }
+}
