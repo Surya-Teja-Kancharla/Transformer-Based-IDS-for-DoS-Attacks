@@ -12,7 +12,7 @@ Phase 2 contributions vs Res-TranBiLSTM (Phase 1):
 Usage:
   # From ProposedImplementation/ directory:
   python src/train.py --config configs/proposed_config.yaml
-  python src/train.py --config configs/proposed_config.yaml --csv data/raw/Wednesday-workingHours.pcap_ISCX.csv
+  python src/train.py --config configs/proposed_config.yaml --csv data/raw/Wednesday-workingHours.csv
   python src/train.py --config configs/proposed_config.yaml --load-cache  # skip preprocessing
 
 Author: FYP ProposedImplementation
