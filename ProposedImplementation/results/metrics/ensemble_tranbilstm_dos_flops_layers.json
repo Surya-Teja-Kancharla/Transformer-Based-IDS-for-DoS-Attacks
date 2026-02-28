@@ -3050,7 +3050,7 @@
     ]
   },
   {
-    "name": "temporal.linear_attn.q_proj",
+    "name": "temporal.transformer.q_proj",
     "type": "Linear",
     "macs": 65536,
     "params": 1024,
@@ -3066,7 +3066,7 @@
     ]
   },
   {
-    "name": "temporal.linear_attn.k_proj",
+    "name": "temporal.transformer.k_proj",
     "type": "Linear",
     "macs": 65536,
     "params": 1024,
@@ -3082,7 +3082,7 @@
     ]
   },
   {
-    "name": "temporal.linear_attn.v_proj",
+    "name": "temporal.transformer.v_proj",
     "type": "Linear",
     "macs": 65536,
     "params": 1024,
@@ -3098,7 +3098,7 @@
     ]
   },
   {
-    "name": "temporal.linear_attn.out_proj",
+    "name": "temporal.transformer.out_proj",
     "type": "Linear",
     "macs": 65536,
     "params": 1024,
@@ -3114,7 +3114,7 @@
     ]
   },
   {
-    "name": "temporal.linear_attn.ff.0",
+    "name": "temporal.transformer.ff.0",
     "type": "Linear",
     "macs": 135168,
     "params": 2112,
@@ -3130,7 +3130,7 @@
     ]
   },
   {
-    "name": "temporal.linear_attn.ff.3",
+    "name": "temporal.transformer.ff.3",
     "type": "Linear",
     "macs": 133120,
     "params": 2080,
@@ -3146,10 +3146,10 @@
     ]
   },
   {
-    "name": "temporal.bigru.bigru",
-    "type": "GRU",
-    "macs": 2367488,
-    "params": 37632,
+    "name": "temporal.bilstm.bilstm",
+    "type": "LSTM",
+    "macs": 3170304,
+    "params": 50176,
     "input_shape": [
       1,
       64,
@@ -3192,15 +3192,15 @@
   {
     "name": "classifier.fc6",
     "type": "Linear",
-    "macs": 390,
-    "params": 390,
+    "macs": 325,
+    "params": 325,
     "input_shape": [
       1,
       64
     ],
     "output_shape": [
       1,
-      6
+      5
     ]
   }
 ]

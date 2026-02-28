@@ -1,0 +1,21 @@
+{
+  "total_macs": 114595861,
+  "total_flops": 229191722,
+  "total_gmacs": 0.114596,
+  "total_gflops": 0.229192,
+  "total_params": 3255717,
+  "total_params_mb": 13.023,
+  "by_type": {
+    "Conv2d": 105062000,
+    "BatchNorm2d": 4249696,
+    "AdaptiveAvgPool2d": 4864,
+    "Linear": 2108997,
+    "LSTM": 3170304
+  },
+  "by_module": {
+    "spatial": 110816784,
+    "temporal": 3737600,
+    "classifier": 41477
+  },
+  "batch_size": 1
+}

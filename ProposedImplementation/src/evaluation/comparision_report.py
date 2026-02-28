@@ -157,7 +157,7 @@ def generate_report(
     Generate full Phase 1 vs Phase 2 comparison report.
 
     Uses count_flops() from evaluation.flops_counter for accurate MACs
-    (covers Conv2d groups, BatchNorm2d, Linear, GRU, AdaptiveAvgPool2d).
+    (covers Conv2d groups, BatchNorm2d, Linear, LSTM, AdaptiveAvgPool2d).
 
     Parameters
     ----------

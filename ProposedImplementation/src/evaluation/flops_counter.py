@@ -6,28 +6,28 @@ LightweightIDSModel (Phase 2), broken down by module and layer type.
 
 Phase 2 twin of ExistingImplementation/src/evaluation/flops_counter.py.
 Identical implementation -- the MAC calculators are model-agnostic and
-already cover every layer type present in LightweightIDSModel:
+cover every layer type present in LightweightIDSModel:
 
-  Phase 1 layer types present      Phase 2 layer types present
-  --------------------------------- ------------------------------------------
+  Phase 1 layer types present       Phase 2 layer types present
+  ──────────────────────────────── ────────────────────────────────────────────
   nn.Conv2d   (ResNet standard 3x3) nn.Conv2d   (MBConvBlock DW + PW + expand)
   nn.BatchNorm2d                    nn.BatchNorm2d
-  nn.Linear   (MLP, FFN, FC head)   nn.Linear   (same + SE fc1/fc2)
+  nn.Linear   (MLP, FFN, FC head)   nn.Linear   (same + SE fc1/fc2 + attn proj)
   nn.MultiheadAttention             [replaced by LinearAttentionBlock,
                                      uses nn.Linear internally]
-  nn.LSTM     (BiLSTM)              nn.GRU      (BiGRU)
+  nn.LSTM     (BiLSTM)              nn.LSTM     (BiLSTM -- identical to Phase 1)
   nn.AdaptiveMaxPool2d              nn.AdaptiveAvgPool2d (per-branch global pool)
 
 Phase 2 spatial branch (EnsembleSpatialExtractor):
   Two parallel branches -- MobileNetV2Branch and EfficientNetB0Branch.
   Both use nn.Conv2d with groups=mid_ch (depthwise) and groups=1 (pointwise).
   EfficientNetB0Branch adds SqueezeExcitation (nn.Linear fc1/fc2 + AdaptiveAvgPool2d).
-  All of these are handled by existing _macs_conv2d and _macs_linear calculators.
+  All handled by existing _macs_conv2d and _macs_linear calculators.
 
   The by_module breakdown will show:
     spatial.mobilenet.*    -- MobileNetV2Branch MACs
     spatial.efficientnet.* -- EfficientNetB0Branch MACs
-    temporal.*             -- LinearAttn + BiGRU MACs
+    temporal.*             -- LinearAttn + BiLSTM MACs
     classifier.*           -- FC-4, FC-5, FC-6 MACs
 
 NOTE on LinearAttentionBlock (Phase 2):
@@ -38,6 +38,10 @@ NOTE on LinearAttentionBlock (Phase 2):
   this is negligible vs the O(n^2*d) softmax alternative and is not
   separately counted (consistent with how most profilers treat manual
   matrix multiplications vs nn.MultiheadAttention).
+
+NOTE on BiLSTM (Phase 2):
+  Phase 2 uses nn.LSTM (bidirectional=True) -- identical to Phase 1.
+  _macs_lstm handles both phases.
 
 No external libraries required (no torchinfo, no thop, no fvcore).
 Uses PyTorch forward hooks only.
@@ -151,23 +155,21 @@ def _macs_multihead_attention(
     h = module.num_heads
     d_head = d_model // h
 
-    macs_qkv   = 3 * B * seq * d_model * d_model
-    macs_qkt   = B * h * seq * seq * d_head
+    macs_qkv    = 3 * B * seq * d_model * d_model
+    macs_qkt    = B * h * seq * seq * d_head
     macs_attn_v = B * h * seq * seq * d_head
-    macs_out   = B * seq * d_model * d_model
+    macs_out    = B * seq * d_model * d_model
 
     return int(macs_qkv + macs_qkt + macs_attn_v + macs_out)
 
 
 def _macs_lstm(module: nn.LSTM, input: Tuple, output: Tuple) -> int:
     """
-    MACs for nn.LSTM.
+    MACs for nn.LSTM (BiLSTM).
 
-    Present in Phase 1 (BiLSTMBlock).
-    NOT present in Phase 2 (replaced by BiGRUBlock using nn.GRU).
-    Kept in registry for completeness and Phase 1 compatibility.
+    Present in BOTH Phase 1 AND Phase 2 -- BiLSTM is identical across phases.
 
-    LSTM has 4 gates. Per timestep per direction:
+    LSTM has 4 gates (input, forget, cell, output). Per timestep per direction:
       MACs = 4 x (input_size + hidden_size) x hidden_size
     """
     x = input[0]
@@ -187,33 +189,6 @@ def _macs_lstm(module: nn.LSTM, input: Tuple, output: Tuple) -> int:
     return int(total_macs)
 
 
-def _macs_gru(module: nn.GRU, input: Tuple, output: Tuple) -> int:
-    """
-    MACs for nn.GRU.
-
-    Present in Phase 2 (BiGRUBlock) -- primary recurrent calculator.
-    GRU has 3 gates (reset, update, new). Per timestep per direction:
-      MACs = 3 x (input_size + hidden_size) x hidden_size
-
-    For BiGRU: directions=2, giving 2x the single-direction cost.
-    """
-    x = input[0]
-    if module.batch_first:
-        B, seq, _ = x.shape
-    else:
-        seq, B, _ = x.shape
-
-    directions  = 2 if module.bidirectional else 1
-    input_size  = module.input_size
-    hidden_size = module.hidden_size
-
-    macs_per_step  = 3 * (input_size + hidden_size) * hidden_size
-    macs_per_step += hidden_size   # elementwise new hidden state computation
-
-    total_macs = B * seq * directions * module.num_layers * macs_per_step
-    return int(total_macs)
-
-
 def _macs_pooling(module: nn.Module, input: Tuple, output: torch.Tensor) -> int:
     """
     MACs for pooling layers (MaxPool, AvgPool, AdaptivePool).
@@ -228,16 +203,15 @@ def _macs_pooling(module: nn.Module, input: Tuple, output: torch.Tensor) -> int:
 # ---------------------------------------------------------------------------
 
 _MAC_CALCULATORS = {
-    nn.Conv2d:                _macs_conv2d,        # DW + PW convs (Phase 2)
-    nn.BatchNorm2d:           _macs_batchnorm2d,
-    nn.Linear:                _macs_linear,        # MLP, attn projections, FC head
-    nn.MultiheadAttention:    _macs_multihead_attention,  # Phase 1 only
-    nn.LSTM:                  _macs_lstm,           # Phase 1 only
-    nn.GRU:                   _macs_gru,            # Phase 2 BiGRU
-    nn.MaxPool2d:             _macs_pooling,
-    nn.AvgPool2d:             _macs_pooling,
-    nn.AdaptiveMaxPool2d:     _macs_pooling,        # Phase 1 global pool
-    nn.AdaptiveAvgPool2d:     _macs_pooling,        # Phase 2 global pool
+    nn.Conv2d:             _macs_conv2d,               # DW + PW convs (Phase 2)
+    nn.BatchNorm2d:        _macs_batchnorm2d,
+    nn.Linear:             _macs_linear,               # MLP, attn projections, FC head
+    nn.MultiheadAttention: _macs_multihead_attention,  # Phase 1 only
+    nn.LSTM:               _macs_lstm,                 # Both phases (BiLSTM)
+    nn.MaxPool2d:          _macs_pooling,
+    nn.AvgPool2d:          _macs_pooling,
+    nn.AdaptiveMaxPool2d:  _macs_pooling,              # Phase 1 global pool
+    nn.AdaptiveAvgPool2d:  _macs_pooling,              # Phase 2 global pool
 }
 
 
@@ -299,7 +273,7 @@ def count_flops(
 
     def _make_hook(mod_name: str, mod: nn.Module, calc_fn):
         def hook(module, inp, out):
-            # Some modules return tuples (LSTM, GRU, MHA)
+            # Some modules return tuples (LSTM, MHA)
             out_tensor = out[0] if isinstance(out, (tuple, list)) else out
             inp_shape  = tuple(inp[0].shape) if inp else ()
             out_shape  = tuple(out_tensor.shape) if isinstance(out_tensor, torch.Tensor) else ()
@@ -467,9 +441,9 @@ if __name__ == "__main__":
 
     from models.proposed_model import build_proposed_dos_model
 
-    print("Building Ensemble-CTGAN-IDS (DoS subset, 5 classes)...")
-    print("  Spatial: MobileNetV2Branch + EfficientNetB0Branch (soft ensemble)")
-    print("  Temporal: LinearAttention + BiGRU")
+    print("Building Ensemble-TranBiLSTM (DoS subset, 5 classes)...")
+    print("  Spatial:  MobileNetV2Branch + EfficientNetB0Branch (soft ensemble)")
+    print("  Temporal: LinearAttentionBlock (O(n)) + BiLSTM (identical to Phase 1)")
     model = build_proposed_dos_model(num_classes=5, dropout=0.0)  # dropout=0 for clean FLOPs
     model.eval()
 
@@ -491,15 +465,17 @@ if __name__ == "__main__":
             label = name.replace("_", " ").title()
             print(f"  {label:<30} {params:>12,}  ({pct:.1f}%)")
 
-    # Phase 1 vs Phase 2 comparison (New_Idea.txt lines 240-245, 263-267)
-    print("\n  --- Phase 1 vs Phase 2 Complexity (New_Idea.txt validation) ---")
+    # Phase 1 vs Phase 2 comparison
+    print("\n  --- Phase 1 vs Phase 2 Complexity ---")
     print(f"  {'':35} {'Phase 1':>14}  {'Phase 2':>14}  {'Reduction':>10}")
     print(f"  {'Architecture':35} {'ResNet-18':>14}  {'MV2+EfB0 Ens':>14}  {'':>10}")
+    print(f"  {'Recurrent Unit':35} {'BiLSTM':>14}  {'BiLSTM':>14}  {'identical':>10}")
     print(f"  {'Total Params':35} {'~11,334,117':>14}  {report['total_params']:>14,}  "
           f"{1 - report['total_params']/11_334_117:>10.1%}")
     print(f"  {'Spatial Params':35} {'~11,200,000':>14}  {param_counts['spatial']:>14,}  "
           f"{1 - param_counts['spatial']/11_200_000:>10.1%}")
     print(f"  {'Total GMACs':35} {'~0.1266':>14}  {report['total_gmacs']:>14.6f}  "
           f"{'(see report)':>10}")
-    print(f"\n  New_Idea.txt claim (ensemble < single ResNet-18):  "
+    print(f"\n  Ensemble < single ResNet-18:  "
           f"{'VALIDATED' if report['total_params'] < 11_334_117 else 'CHECK CONFIG'}")
+    

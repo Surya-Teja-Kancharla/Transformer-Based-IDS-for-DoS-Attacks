@@ -100,7 +100,7 @@ class ClassificationHead(nn.Module):
         spatial_feat  : torch.Tensor, shape (B, 128)
             Output from LightweightSpatialExtractor.
         temporal_feat : torch.Tensor, shape (B, 128)
-            Output from EfficientTemporalExtractor (BiGRU last hidden).
+            Output from EfficientTemporalExtractor (BiLSTM last hidden).
 
         Returns
         -------

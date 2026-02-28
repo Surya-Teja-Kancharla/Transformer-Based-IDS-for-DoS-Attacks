@@ -1,16 +1,16 @@
 """
 proposed_model.py
 =================
-Full Ensemble-CTGAN-IDS model -- assembles all three proposed modules.
+Full Ensemble-TranBiLSTM model -- assembles all three proposed modules.
 
 Phase 2 equivalent of ExistingImplementation/src/models/res_tranbilstm.py.
 
 Paper (Wang et al., 2023) Fig. 2 -- Overall workflow (same dual-branch structure):
   Input features
-    |-- 1D->2D reshaping -> EnsembleSpatialExtractor           -> (B, 128)
+    |-- 1D->2D reshaping -> EnsembleSpatialExtractor              -> (B, 128)
     |     MobileNetV2 + EfficientNet-B0 soft feature averaging
     |
-    +-- MLP encoding -> EfficientTemporalExtractor (LinearAttn+BiGRU) -> (B, 128)
+    +-- MLP encoding -> EfficientTemporalExtractor (LinearAttn+BiLSTM) -> (B, 128)
                               |
               Concat [spatial_feat, temporal_feat] -> (B, 256)
                               |
@@ -21,16 +21,23 @@ IMPROVEMENTS OVER PHASE 1 (Res-TranBiLSTM), from New_Idea.txt:
   | Component            | Phase 1            | Phase 2                       |
   +----------------------+--------------------+-------------------------------+
   | Spatial branch       | ResNet-18 (11.2M)  | MobileNetV2 + EfficientNet-B0 |
-  |                      | Single model       | Soft ensemble (~1.7M combined)|
+  |                      | Single model       | Soft ensemble (~3.2M combined)|
   | Ensemble method      | N/A                | Soft feature averaging        |
   |                      |                    | (New_Idea.txt lines 276-280)  |
   | Temporal attention   | Softmax O(n^2)     | Linear kernel O(n)            |
-  | Temporal recurrence  | BiLSTM             | BiGRU (~33% fewer gates)      |
+  | Temporal recurrence  | BiLSTM             | BiLSTM (IDENTICAL)            |
   | Data augmentation    | SMOTE-ENN          | CTGAN (generative model)      |
-  | Spatial params       | ~11.2M             | ~1.7M (~85% reduction)        |
-  | Total params (approx)| ~11.4M             | ~1.9M (~83% reduction)        |
+  | Spatial params       | ~11.2M             | ~3.2M (~71% reduction)        |
+  | Total params (approx)| ~11.4M             | ~3.4M (~70% reduction)        |
   | Accuracy target      | 98.90% (baseline)  | >=98.5% (within 0.5%)        |
   +----------------------+--------------------+-------------------------------+
+
+ISOLATION PRINCIPLE:
+  BiLSTM is kept identical to Phase 1 (paper architecture preserved) so
+  that any accuracy or efficiency difference is attributable solely to:
+    1. Spatial branch: ResNet-18 -> MobileNetV2 + EfficientNet-B0 ensemble
+    2. Data augmentation: SMOTE-ENN -> CTGAN
+    3. Attention: softmax O(n^2) -> linear kernel O(n)
 
 RESEARCH CONTRIBUTION (New_Idea.txt lines 282-285):
   "We replace the single heavy ResNet-18 spatial branch with an ensemble
@@ -59,7 +66,7 @@ from models.classification.classifier   import ClassificationHead
 
 class LightweightIDSModel(nn.Module):
     """
-    Full Ensemble-CTGAN-IDS intrusion detection model.
+    Full Ensemble-TranBiLSTM intrusion detection model.
 
     Phase 2 replacement for Phase 1's ResTranBiLSTM.
 
@@ -68,8 +75,8 @@ class LightweightIDSModel(nn.Module):
       same 28x28 input. Both produce (B, 128). Soft ensemble (average)
       gives (B, 128) to the concat layer.
 
-    Temporal branch: EfficientTemporalExtractor (unchanged from previous Phase 2)
-      LinearAttention O(n) + BiGRU. Produces (B, 128).
+    Temporal branch: EfficientTemporalExtractor
+      LinearAttention O(n) + BiLSTM (identical to Phase 1). Produces (B, 128).
 
     Both branches run in parallel (same as Phase 1 architecture).
     Concat (B, 256) -> ClassificationHead (same as Phase 1).
@@ -88,13 +95,13 @@ class LightweightIDSModel(nn.Module):
     output_dim : int
         Both branch output dimensions (128 per paper FC-1).
     d_model : int
-        Transformer/GRU input dimension (32 per Table 8).
+        Attention / BiLSTM input dimension (32 per Table 8).
     n_heads : int
         Number of attention heads (4 per Table 8).
     ff_hidden : int
         Feed-forward hidden size (64 per Table 8).
-    gru_hidden : int
-        GRU hidden size per direction (64 per Table 8).
+    bilstm_hidden : int
+        BiLSTM hidden size per direction (64 per Table 8).
     mlp_hidden_dim : int
         MLP FC-2 hidden size (16 per Table 7).
     dropout : float
@@ -110,7 +117,7 @@ class LightweightIDSModel(nn.Module):
         d_model: int = 32,
         n_heads: int = 4,
         ff_hidden: int = 64,
-        gru_hidden: int = 64,
+        bilstm_hidden: int = 64,
         mlp_hidden_dim: int = 16,
         dropout: float = 0.5,
     ) -> None:
@@ -128,8 +135,9 @@ class LightweightIDSModel(nn.Module):
             dropout=dropout,
         )
 
-        # -- Temporal Branch: EfficientTemporalExtractor (LinearAttn + BiGRU) --
-        # Unchanged from previous Phase 2 temporal design
+        # -- Temporal Branch: EfficientTemporalExtractor (LinearAttn + BiLSTM) --
+        # LinearAttention replaces softmax attention (O(n) vs O(n^2)).
+        # BiLSTM is IDENTICAL to Phase 1 -- paper architecture preserved.
         self.temporal = EfficientTemporalExtractor(
             seq_len=seq_len,
             mlp_input_dim=1,
@@ -137,7 +145,7 @@ class LightweightIDSModel(nn.Module):
             d_model=d_model,
             n_heads=n_heads,
             ff_hidden=ff_hidden,
-            gru_hidden=gru_hidden,
+            bilstm_hidden=bilstm_hidden,
             dropout=dropout,
         )
 
@@ -165,7 +173,7 @@ class LightweightIDSModel(nn.Module):
         Parallel dual-branch forward pass.
 
         The spatial ensemble (MobileNetV2 + EfficientNetB0) and temporal
-        branch (LinearAttn + BiGRU) run in parallel. Both produce (B, 128).
+        branch (LinearAttn + BiLSTM) run in parallel. Both produce (B, 128).
         Concat -> ClassificationHead -> logits.
 
         Parameters
@@ -199,8 +207,8 @@ class LightweightIDSModel(nn.Module):
 
         Returns
         -------
-        preds : torch.Tensor, shape (B,)            -- predicted class indices
-        probs : torch.Tensor, shape (B, num_classes) -- softmax probabilities
+        preds : torch.Tensor, shape (B,)             -- predicted class indices
+        probs : torch.Tensor, shape (B, num_classes)  -- softmax probabilities
         """
         self.eval()
         with torch.no_grad():
@@ -254,11 +262,11 @@ class LightweightIDSModel(nn.Module):
         }
 
     def summary(self) -> str:
-        """Print model architecture summary."""
+        """Returns a formatted architecture summary string."""
         param_counts = self.count_parameters()
         lines = [
             "=" * 65,
-            "  LightweightIDSModel -- Ensemble-CTGAN-IDS (ProposedImplementation)",
+            "  LightweightIDSModel -- Ensemble-TranBiLSTM (ProposedImplementation)",
             "=" * 65,
             f"  num_classes   : {self.num_classes}",
             f"  seq_len       : {self.seq_len}",
@@ -271,15 +279,17 @@ class LightweightIDSModel(nn.Module):
             "    Input                : (B, 1, 28, 28) -- each branch sees same input",
             "    Output               : (B, 128)       -- averaged feature vector",
             "",
-            "  [Temporal Branch -- LinearAttn + BiGRU]",
-            f"    Parameters  : {param_counts['temporal']:>10,}",
-            "    Input        : (B, 64) or (B, 64, 1)",
-            "    Output       : (B, 128)",
+            "  [Temporal Branch -- LinearAttn + BiLSTM]",
+            f"    Parameters           : {param_counts['temporal']:>10,}",
+            "    Attention            : LinearAttentionBlock  O(n)",
+            "    Recurrence           : BiLSTM (nn.LSTM, identical to Phase 1)",
+            "    Input                : (B, 64) or (B, 64, 1)",
+            "    Output               : (B, 128)",
             "",
-            "  [Classification Head]",
-            f"    Parameters  : {param_counts['classification']:>10,}",
-            "    Input        : (B, 256) -- concat(spatial, temporal)",
-            f"    Output       : (B, {self.num_classes})",
+            "  [Classification Head -- identical to Phase 1]",
+            f"    Parameters           : {param_counts['classification']:>10,}",
+            "    Input                : (B, 256) -- concat(spatial, temporal)",
+            f"    Output               : (B, {self.num_classes})",
             "",
             f"  TOTAL Parameters     : {param_counts['total']:>10,}",
             f"  Phase 1 (ResNet-18)  : ~11,334,117",
@@ -356,8 +366,9 @@ if __name__ == "__main__":
     print(f"  MobileNetV2Branch    : {p['spatial_mobilenet']:>10,}")
     print(f"  EfficientNetB0Branch : {p['spatial_efficientnet']:>10,}")
     print(f"  Spatial ensemble     : {p['spatial']:>10,}")
-    print(f"  Temporal             : {p['temporal']:>10,}")
+    print(f"  Temporal (LinAttn+BiLSTM) : {p['temporal']:>10,}")
     print(f"  Classification       : {p['classification']:>10,}")
     print(f"  TOTAL Phase 2        : {p['total']:>10,}")
     print(f"  Phase 1 baseline     : ~11,334,117")
     print(f"  Reduction            :  {1 - p['total']/11_334_117:.1%} fewer params")
+    

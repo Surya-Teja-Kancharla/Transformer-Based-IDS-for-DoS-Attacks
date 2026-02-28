@@ -7,12 +7,12 @@ Phase 2 contributions vs Res-TranBiLSTM (Phase 1):
   1. CTGAN replaces SMOTE-ENN  — GAN distribution learning vs interpolation
   2. Lightweight spatial branch — DSConv + SE + InvertedResidual (~0.9M params)
      vs ResNet-18 (~11.2M params) — ~92% parameter reduction
-  3. Efficient temporal branch  — Linear Attention O(n) + BiGRU vs O(n^2) + BiLSTM
+  3. Efficient temporal branch  — Linear Attention O(n) vs softmax O(n^2); BiLSTM identical to Phase 1
 
 Usage:
   # From ProposedImplementation/ directory:
   python src/train.py --config configs/proposed_config.yaml
-  python src/train.py --config configs/proposed_config.yaml --csv data/raw/Wednesday-workingHours.csv
+  python src/train.py --config configs/proposed_config.yaml --csv data/raw/Wednesday-workingHours.pcap_ISCX.csv
   python src/train.py --config configs/proposed_config.yaml --load-cache  # skip preprocessing
 
 Author: FYP ProposedImplementation
