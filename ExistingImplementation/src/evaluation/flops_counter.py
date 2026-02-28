@@ -9,7 +9,7 @@ Covers all layer types present in Res-TranBiLSTM:
   - nn.BatchNorm2d     (ResNet spatial branch)
   - nn.Linear          (MLP encoder, FC head, Transformer FFN)
   - nn.MultiheadAttention (Transformer encoder)
-  - nn.LSTM / nn.GRU   (BiLSTM temporal branch)
+  - nn.LSTM            (BiLSTM temporal branch)
   - nn.AdaptiveMaxPool2d / nn.AdaptiveAvgPool2d
 
 No external libraries required (no torchinfo, no thop, no fvcore).
